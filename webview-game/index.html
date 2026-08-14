@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0,viewport-fit=cover">
+<title>Boba Dash — Brew · Serve · Deliver</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --pink:#FF6B9D; --pink-l:#FFE0EC;
+  --green:#7FB069; --green-l:#E1F5EE;
+  --yellow:#FFB627; --yellow-l:#FFF4E0;
+  --blue:#6CB4EE; --blue-l:#E0F0FF;
+  --red:#FF4757; --red-l:#FFE3E6;
+  --bg:#FFF5F0; --border:#FFD0D0;
+  --gray:#E8E8EC; --text:#3a3a3a; --text2:#8a8a8a;
+  --c-pink-f:#FBEAF0; --c-pink-s:#D4537E;
+  --c-teal-f:#E1F5EE; --c-teal-s:#1D9E75;
+  --c-amber-f:#FAEEDA; --c-amber-s:#BA7517;
+  --c-blue-f:#E6F1FB; --c-blue-s:#378ADD;
+  --c-purple-f:#EEEDFE; --c-purple-s:#7F77DD;
+  --c-gray-f:#F1EFE8; --c-gray-s:#888780;
+}
+.svg-ico{display:inline-block;vertical-align:middle;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.svg-ico.sz-10{width:10px;height:10px}.svg-ico.sz-12{width:12px;height:12px}.svg-ico.sz-14{width:14px;height:14px}.svg-ico.sz-16{width:16px;height:16px}.svg-ico.sz-18{width:18px;height:18px}.svg-ico.sz-20{width:20px;height:20px}.svg-ico.sz-22{width:22px;height:22px}.svg-ico.sz-28{width:28px;height:28px}.svg-ico.sz-34{width:34px;height:34px}.svg-ico.sz-38{width:38px;height:38px}.svg-ico.sz-48{width:48px;height:48px}.svg-ico.sz-54{width:54px;height:54px}.svg-ico.sz-80{width:80px;height:80px}
+
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+body{font-family:-apple-system,"Segoe UI","Helvetica Neue",sans-serif;background:#e8e8e8;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-overflow-scrolling:touch}
+#gc{max-width:580px;margin:0 auto;height:100vh;height:100dvh;max-height:980px;display:flex;flex-direction:column;background:linear-gradient(180deg,#FFF5F0,#FFE8E0);overflow:hidden;position:relative;box-shadow:0 0 30px rgba(0,0,0,.18);overscroll-behavior:contain}
+.screen{display:none;flex:1;flex-direction:column;min-height:0;overflow:hidden}.screen.active{display:flex}
+.hidden{display:none!important}
+.btn{border:none;border-radius:25px;font-weight:600;cursor:pointer;transition:transform .1s;font-family:inherit}
+.btn:active{transform:scale(.95)}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btn-p{background:var(--pink);color:#fff;padding:18px 50px;font-size:22px}
+.btn-s{background:#fff;color:var(--pink);padding:14px 38px;font-size:18px;border:2px solid var(--pink)}
+
+/* === Title Screen === */
+#ts{align-items:center;justify-content:center;text-align:center;padding:36px}
+#ts .logo{width:120px;height:120px;margin-bottom:14px;animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+#ts h1{font-size:38px;color:var(--pink);margin-bottom:10px}
+#ts .sub{color:var(--text2);margin-bottom:34px;font-size:17px}
+#ts .btn{margin:8px}
+
+/* === Intro Screen === */
+#is{align-items:stretch;justify-content:flex-start;padding:24px 22px 110px;text-align:center;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;position:relative;flex:1;min-height:0}
+#is h2{font-size:30px;color:var(--pink);margin-bottom:14px}
+#is .ndrinks{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:14px 0;max-width:440px}
+#is .nd{background:var(--pink-l);color:var(--pink);padding:5px 11px;border-radius:12px;font-size:13px;font-weight:600;white-space:nowrap}
+#is .tut{background:var(--blue-l);border:2px solid var(--blue);border-radius:16px;padding:14px 20px;margin:14px 0;text-align:left;font-size:14px;line-height:1.7;max-width:440px;color:var(--text)}
+#is .tut strong{color:var(--blue);display:block;margin-bottom:6px;font-size:16px}
+#is .scroll-hint{margin:6px auto;width:42px;height:24px;border-radius:12px;background:rgba(255,107,157,.12);color:var(--pink);display:flex;align-items:center;justify-content:center;animation:bobHint 1.4s ease-in-out infinite}
+#is .scroll-hint svg{width:18px;height:18px;stroke:var(--pink)}
+@keyframes bobHint{0%,100%{transform:translateY(0);opacity:.85}50%{transform:translateY(4px);opacity:1}}
+#btn-begin{position:sticky;bottom:16px;z-index:5;box-shadow:0 -8px 20px rgba(255,107,157,.18),0 4px 0 #b53a66;margin-top:auto}
+
+/* === Game Screen HUD === */
+#tb{height:48px;display:flex;justify-content:space-around;align-items:center;background:rgba(255,255,255,.96);border-bottom:1px solid var(--border);font-size:15px;font-weight:700;flex-shrink:0;padding:0 10px}
+.ti{display:flex;align-items:center;gap:5px;color:var(--text)}
+#cd.hot{color:var(--pink)}
+
+/* === Customer Cards (horizontal scroll) === */
+#ca{height:118px;display:flex;gap:10px;padding:8px 10px;overflow-x:auto;flex-shrink:0;background:rgba(255,255,255,.4)}
+#ca::-webkit-scrollbar,#tk::-webkit-scrollbar,#ss-list::-webkit-scrollbar{height:0;width:0}
+.cc{min-width:280px;height:118px;background:#fff;border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:12px;border:2.5px solid var(--border);animation:slideIn .3s;flex-shrink:0;position:relative}
+.cc.vip{border-color:var(--yellow);box-shadow:0 0 10px rgba(255,182,39,.4)}
+.cc.imp{border-color:var(--red)}
+.cc.selected{border-color:var(--green)!important;box-shadow:0 0 14px rgba(127,176,105,.6);transform:scale(1.03)}
+@keyframes slideIn{from{transform:translateY(-15px);opacity:0}to{transform:translateY(0);opacity:1)}}
+@keyframes fadeOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.8)}}
+.cc .av{width:44px;height:44px;flex-shrink:0}
+.cc .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;height:100%;justify-content:center}
+.cc .tl{position:absolute;top:5px;right:8px;font-size:11px;font-weight:700;padding:3px 7px;border-radius:7px;color:#fff;display:inline-flex;align-items:center;gap:3px}
+.cc .on{font-size:17px;font-weight:700;color:var(--text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc .oi{display:flex;gap:5px;line-height:1}
+.cc .oi svg{flex-shrink:0}
+.cc .oc{width:52px;height:66px;flex-shrink:0;border-radius:7px;background:rgba(255,240,240,.5)}
+.pb{width:100%;height:6px;background:#eee;border-radius:3px;overflow:hidden}
+.pf{height:100%;border-radius:3px;transition:width .1s linear}
+
+/* === Compact Stepper === */
+#stepper{height:50px;display:flex;align-items:center;justify-content:center;gap:5px;padding:5px 10px;background:rgba(255,255,255,.6);flex-shrink:0;border-bottom:1px solid #f5e0d0}
+.sp-item{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--text2);min-width:46px}
+.sp-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--gray);color:#fff}
+.sp-item.done .sp-dot{background:var(--green)}
+.sp-item.active .sp-dot{background:var(--pink);color:#fff;animation:pulse 1s infinite}
+.sp-item.done{color:var(--green)}
+.sp-item.active{color:var(--pink);font-weight:700}
+.sp-lbl{font-size:10px;line-height:1;font-weight:600}
+.sp-line{flex:0 0 18px;height:2px;background:var(--gray);margin-top:-12px}
+.sp-line.done{background:var(--green)}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+
+/* === Workstation Preview Canvas === */
+#ws{height:96px;display:flex;align-items:center;justify-content:center;gap:12px;padding:6px 14px;flex-shrink:0;background:rgba(255,255,255,.45)}
+#scv{width:82px;height:82px;border-radius:10px;background:rgba(255,255,255,.5);border:2px dashed #ffd0d0}
+#ws-empty{font-size:15px;color:var(--text2);text-align:center;line-height:1.5;display:flex;align-items:center;gap:6px}
+
+/* === Single-step wizard pane === */
+#step-pane{flex:1;overflow-y:auto;padding:10px 14px 6px;display:flex;flex-direction:column;min-height:0;-webkit-overflow-scrolling:touch}
+.sp-title{font-size:17px;font-weight:700;color:var(--pink);margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.sp-title .sp-num{background:var(--pink);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.sp-sub{font-size:14px;color:var(--text2);margin-bottom:10px;line-height:1.5}
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sp-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.sp-grid.cols-4{grid-template-columns:1fr 1fr 1fr 1fr}
+.sp-card{background:#fff;border:2.5px solid var(--border);border-radius:16px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:inherit;transition:all .12s;min-height:96px}
+.sp-card:active{transform:scale(.95)}
+.sp-card.selected{background:var(--green-l);border-color:var(--green);box-shadow:0 4px 14px rgba(127,176,105,.25)}
+.sp-card .sp-icon{width:50px;height:50px;display:flex;align-items:center;justify-content:center}
+.sp-card .sp-name{font-size:15px;font-weight:700;color:var(--text);line-height:1.2;text-align:center}
+.sp-card.selected .sp-name{color:var(--green)}
+
+#blend-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:10px;min-height:0}
+#blend-btn{width:130px;height:130px;border-radius:50%;background:linear-gradient(135deg,var(--blue),#5AA4E4);color:#fff;font-size:20px;font-weight:700;border:none;cursor:pointer;font-family:inherit;box-shadow:0 5px 0 #4a8acc,0 6px 14px rgba(108,180,238,.4);transition:transform .1s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+#blend-btn:active:not(:disabled){transform:translateY(2px);box-shadow:0 3px 0 #4a8acc,0 4px 8px rgba(108,180,238,.4)}
+#blend-btn:disabled{background:linear-gradient(135deg,#bbb,#999);box-shadow:0 4px 0 #888;cursor:not-allowed}
+#blend-btn.blending{animation:spin 1s linear infinite;background:linear-gradient(135deg,var(--yellow),#E0A317);box-shadow:0 5px 0 #b07a13,0 6px 14px rgba(255,182,39,.4)}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+#blend-progress{width:240px;height:10px;background:#eee;border-radius:5px;overflow:hidden}
+#blend-progress-fill{height:100%;background:linear-gradient(90deg,var(--yellow),var(--blue));width:0%;transition:width .1s linear;border-radius:5px}
+
+/* === Bottom Action Bar === */
+#bar{height:84px;display:flex;gap:10px;padding:10px 14px;background:rgba(255,255,255,.97);border-top:1px solid var(--border);flex-shrink:0;align-items:center}
+#btn-trash{flex:0 0 84px;height:68px;background:#f5f5f5;color:var(--text2);border:none;border-radius:16px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+#btn-trash:active{transform:scale(.95)}
+#btn-trash:disabled{opacity:.3}
+#btn-serve{flex:1;height:68px;border:none;border-radius:16px;font-size:19px;font-weight:700;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,var(--pink),#E04B83);color:#fff;box-shadow:0 3px 0 #b53a66;display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .1s}
+#btn-serve:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 #b53a66}
+#btn-serve:disabled{background:linear-gradient(135deg,#bbb,#999);box-shadow:0 2px 0 #888;color:#ddd}
+
+/* === Takeout Area === */
+#tk{min-height:78px;max-height:96px;display:flex;gap:7px;padding:6px 10px;overflow-x:auto;flex-shrink:0;background:rgba(255,247,200,.5);border-top:1px solid #f5e8b0}
+.tc{min-width:200px;height:78px;background:var(--yellow-l);border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:8px;border:2.5px solid var(--yellow);animation:slideIn .3s;flex-shrink:0}
+.tc .info{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.tc .tb-emoji{display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0}
+.tc .on{font-size:14px;font-weight:700;color:var(--text);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tc .oc{width:40px;height:52px;flex-shrink:0}
+.tc .oi{display:flex;gap:3px;line-height:1}
+.tc .oi svg{flex-shrink:0}
+.tt{font-size:14px;font-weight:700;color:var(--yellow);white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+.tt.warn{color:var(--red);animation:pulse .5s infinite}
+.pr{display:flex;align-items:center;justify-content:center;padding:10px 18px;background:var(--yellow);color:#fff;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;animation:ring .4s infinite;gap:7px;flex-shrink:0}
+.pr svg{fill:#fff;stroke:#fff}
+@keyframes ring{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+
+/* === Result Screen === */
+#rs{align-items:center;justify-content:flex-start;padding:24px 22px 28px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1;min-height:0}
+.rc{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:410px;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.1)}
+.rst{display:flex;justify-content:center;gap:6px;margin-bottom:12px}
+.rst svg{width:42px;height:42px}
+.rc h2{font-size:28px;margin-bottom:20px}
+.rstat{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:17px}
+.rstat:last-of-type{border:none}.rstat .v{font-weight:700;color:var(--pink)}
+
+/* === Shop Screen === */
+#ss{padding:20px 18px 100px;overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;position:relative}
+#btn-next{position:sticky;bottom:18px;z-index:5;box-shadow:0 -8px 20px rgba(255,107,157,.18),0 4px 0 #b53a66;margin-top:18px}
+#ss h2{font-size:26px;margin-bottom:12px;text-align:center}
+#scoins{text-align:center;font-size:23px;font-weight:700;color:var(--pink);margin-bottom:18px}
+.ssec{margin-bottom:22px}
+.ssec h3{font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.si2{background:#fff;border:2px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.si2 .info{flex:1}.si2 .info .nm{font-size:16px;font-weight:700}.si2 .info .ds{font-size:13px;color:var(--text2);margin-top:2px}
+.si2 button{border:none;border-radius:12px;padding:10px 14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0}
+.si2 .buy{background:var(--pink);color:#fff}
+.si2 .locked{background:var(--gray);color:var(--text2)}
+.si2 .owned{background:var(--green);color:#fff}
+.wp-item{background:#fff;border:2px solid var(--border);border-radius:14px;padding:10px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.wp-item.selected{border:2px solid var(--green);box-shadow:0 0 10px rgba(127,176,105,.25)}
+.wp-swatch{width:56px;height:56px;border-radius:12px;border:2px solid #e0e0e0;flex-shrink:0}
+.wp-item .info{flex:1}.wp-item .info .nm{font-size:16px;font-weight:700}.wp-item .info .ds{font-size:14px;color:var(--text2);margin-top:2px}
+
+.ft{position:absolute;pointer-events:none;font-weight:700;font-size:21px;animation:fu 1s ease-out forwards;z-index:100}
+@keyframes fu{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-50px);opacity:0}}
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+<!-- ==== UI Icons ==== -->
+<symbol id="ico-calendar" viewBox="0 0 44 44"><rect x="8" y="10" width="28" height="26" rx="3" fill="var(--c-blue-f)" stroke="var(--c-blue-s)" stroke-width="2"/><path d="M8 18 L36 18" stroke="var(--c-blue-s)" stroke-width="2"/><path d="M14 7 L14 13 M30 7 L30 13" stroke="var(--c-blue-s)" stroke-width="2" stroke-linecap="round"/><circle cx="15" cy="25" r="1.8" fill="var(--c-blue-s)"/><circle cx="22" cy="25" r="1.8" fill="var(--c-blue-s)"/><circle cx="29" cy="25" r="1.8" fill="var(--c-blue-s)"/><circle cx="15" cy="31" r="1.8" fill="var(--c-blue-s)"/><circle cx="22" cy="31" r="1.8" fill="var(--c-blue-s)"/></symbol>
+<symbol id="ico-coin" viewBox="0 0 44 44"><circle cx="22" cy="22" r="14" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2"/><circle cx="22" cy="22" r="9.5" fill="none" stroke="var(--c-amber-s)" stroke-width="1.5" opacity="0.4"/><text x="22" y="28" text-anchor="middle" font-size="16" font-weight="700" fill="var(--c-amber-s)" font-family="sans-serif" stroke="none">$</text></symbol>
+<symbol id="ico-stock" viewBox="0 0 44 44"><path d="M10 14 L22 8 L34 14 L34 32 L22 38 L10 32 Z" fill="var(--c-blue-f)" stroke="var(--c-blue-s)" stroke-width="2" stroke-linejoin="round"/><path d="M10 14 L22 20 L34 14" fill="none" stroke="var(--c-blue-s)" stroke-width="2" stroke-linejoin="round"/><path d="M22 20 L22 38" stroke="var(--c-blue-s)" stroke-width="2"/></symbol>
+<symbol id="ico-fire" viewBox="0 0 44 44"><path d="M22 6 C18 14 14 16 14 24 C14 32 18 38 22 38 C26 38 30 32 30 24 C30 18 27 16 25 12 C24 16 22 14 22 6 Z" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2" stroke-linejoin="round"/><path d="M22 18 C20 22 19 24 19 28 C19 33 21 35 22 35 C23 35 25 33 25 28 C25 24 24 22 22 18 Z" fill="var(--c-pink-s)" stroke="none"/></symbol>
+<symbol id="ico-timer" viewBox="0 0 44 44"><circle cx="22" cy="25" r="13" fill="var(--c-blue-f)" stroke="var(--c-blue-s)" stroke-width="2"/><path d="M22 25 L22 17" stroke="var(--c-blue-s)" stroke-width="2.5" stroke-linecap="round"/><path d="M22 25 L28 28" stroke="var(--c-blue-s)" stroke-width="2.5" stroke-linecap="round"/><rect x="17" y="5" width="10" height="5" rx="2" fill="var(--c-blue-s)"/><circle cx="22" cy="25" r="1.5" fill="var(--c-blue-s)"/></symbol>
+<symbol id="ico-trash" viewBox="0 0 44 44"><path d="M14 16 L16 38 L28 38 L30 16 Z" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="2" stroke-linejoin="round"/><path d="M10 16 L34 16" stroke="var(--c-gray-s)" stroke-width="2" stroke-linecap="round"/><path d="M18 12 L26 12 L26 16 L18 16 Z" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="2" stroke-linejoin="round"/><path d="M19 20 L19 34 M22 20 L22 34 M25 20 L25 34" stroke="var(--c-gray-s)" stroke-width="1.5" opacity="0.5"/></symbol>
+<symbol id="ico-star" viewBox="0 0 44 44"><path d="M22 6 L26.5 16.5 L38 18 L29 26.5 L31.5 38 L22 32 L12.5 38 L15 26.5 L6 18 L17.5 16.5 Z" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2" stroke-linejoin="round"/><circle cx="22" cy="22" r="3" fill="var(--c-amber-s)" opacity="0.25"/></symbol>
+<symbol id="ico-star-empty" viewBox="0 0 44 44"><path d="M22 6 L26.5 16.5 L38 18 L29 26.5 L31.5 38 L22 32 L12.5 38 L15 26.5 L6 18 L17.5 16.5 Z" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="2" stroke-linejoin="round" opacity="0.5"/></symbol>
+<symbol id="ico-cart" viewBox="0 0 44 44"><path d="M6 8 L12 8 L16 28 L34 28 L38 14 L14 14" fill="none" stroke="var(--c-blue-s)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="18" cy="36" r="3" fill="var(--c-blue-f)" stroke="var(--c-blue-s)" stroke-width="2"/><circle cx="32" cy="36" r="3" fill="var(--c-blue-f)" stroke="var(--c-blue-s)" stroke-width="2"/></symbol>
+<symbol id="ico-palette" viewBox="0 0 44 44"><path d="M22 8 C12 8 6 16 6 24 C6 30 10 34 16 34 C18 34 18 30 20 28 C22 26 26 28 28 30 C30 32 34 32 36 28 C38 24 38 16 30 12 C28 10 25 8 22 8 Z" fill="var(--c-pink-f)" stroke="var(--c-pink-s)" stroke-width="2" stroke-linejoin="round"/><circle cx="15" cy="18" r="2" fill="var(--c-pink-s)"/><circle cx="22" cy="14" r="2" fill="var(--c-amber-s)"/><circle cx="29" cy="17" r="2" fill="var(--c-teal-s)"/><circle cx="31" cy="24" r="2" fill="var(--c-blue-s)"/></symbol>
+<symbol id="ico-bolt" viewBox="0 0 44 44"><path d="M24 4 L12 24 L20 24 L18 40 L32 18 L24 18 L26 4 Z" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2" stroke-linejoin="round"/></symbol>
+<symbol id="ico-clipboard" viewBox="0 0 44 44"><rect x="10" y="10" width="24" height="30" rx="3" fill="var(--c-blue-f)" stroke="var(--c-blue-s)" stroke-width="2"/><rect x="16" y="6" width="12" height="6" rx="2" fill="var(--c-blue-s)"/><path d="M15 20 L29 20 M15 26 L29 26 M15 32 L24 32" stroke="var(--c-blue-s)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/></symbol>
+<symbol id="ico-phone" viewBox="0 0 44 44"><path d="M12 8 C10 8 8 10 8 12 C8 28 16 36 32 36 C34 36 36 34 36 32 L36 26 L29 24 L26 27 C22 25 19 22 17 18 L20 15 L18 8 Z" fill="var(--c-blue-f)" stroke="var(--c-blue-s)" stroke-width="2" stroke-linejoin="round"/></symbol>
+<symbol id="ico-scooter" viewBox="0 0 44 44"><circle cx="12" cy="32" r="5" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2"/><circle cx="34" cy="32" r="5" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2"/><path d="M12 32 L20 32 L24 18 L34 32" fill="none" stroke="var(--c-amber-s)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><path d="M24 18 L30 18 L32 22" fill="none" stroke="var(--c-amber-s)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><rect x="30" y="10" width="6" height="8" rx="1" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2"/></symbol>
+<symbol id="ico-blender" viewBox="0 0 44 44"><path d="M14 14 L30 14 L28 30 C28 32 26 34 22 34 C18 34 16 32 16 30 Z" fill="var(--c-blue-f)" stroke="var(--c-blue-s)" stroke-width="2" stroke-linejoin="round"/><path d="M22 18 C18 22 26 22 22 26" fill="none" stroke="var(--c-blue-s)" stroke-width="2" stroke-linecap="round"/><rect x="16" y="8" width="12" height="6" rx="2" fill="var(--c-blue-s)"/></symbol>
+<symbol id="ico-check" viewBox="0 0 44 44"><circle cx="22" cy="22" r="16" fill="var(--c-teal-f)" stroke="var(--c-teal-s)" stroke-width="2"/><path d="M14 22 L20 28 L30 16" fill="none" stroke="var(--c-teal-s)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ico-cup" viewBox="0 0 44 44"><path d="M12 12 L32 12 L30 36 C30 38 28 40 22 40 C16 40 14 38 14 36 Z" fill="var(--c-pink-f)" stroke="var(--c-pink-s)" stroke-width="2" stroke-linejoin="round"/><path d="M12 18 L32 18" stroke="var(--c-pink-s)" stroke-width="1.5" opacity="0.5"/><path d="M22 6 C22 8 20 9 20 11" fill="none" stroke="var(--c-pink-s)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/><circle cx="18" cy="26" r="2" fill="var(--c-pink-s)" opacity="0.35"/><circle cx="25" cy="28" r="1.5" fill="var(--c-pink-s)" opacity="0.35"/><line x1="34" y1="16" x2="38" y2="14" stroke="var(--c-pink-s)" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="ico-point-down" viewBox="0 0 44 44"><path d="M22 6 C18 6 16 9 16 13 L16 24 L12 24 L22 38 L32 24 L28 24 L28 13 C28 9 26 6 22 6 Z" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="2" stroke-linejoin="round"/></symbol>
+<!-- ==== Bubble Tea Base Icons ==== -->
+<symbol id="ico-black-tea" viewBox="0 0 44 44"><path d="M12 14 L28 14 L26 36 C26 38 25 40 20 40 C15 40 14 38 14 36 Z" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2" stroke-linejoin="round"/><path d="M28 18 C33 18 33 26 28 26" fill="none" stroke="var(--c-amber-s)" stroke-width="2"/><path d="M12 14 L32 14" stroke="var(--c-amber-s)" stroke-width="1.5" opacity="0.45"/><path d="M17 6 C17 9 15 11 15 13 M22 5 C22 8 20 11 20 13 M27 6 C27 9 25 11 25 13" fill="none" stroke="var(--c-gray-s)" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/><circle cx="18" cy="22" r="2" fill="var(--c-amber-s)" opacity="0.45"/><circle cx="23" cy="26" r="2" fill="var(--c-amber-s)" opacity="0.45"/></symbol>
+<symbol id="ico-green-tea" viewBox="0 0 44 44"><circle cx="22" cy="26" r="13" fill="var(--c-teal-f)" stroke="var(--c-teal-s)" stroke-width="2"/><circle cx="22" cy="26" r="9" fill="var(--c-teal-s)" opacity="0.18"/><path d="M14 22 Q22 18 30 22" fill="none" stroke="var(--c-teal-s)" stroke-width="1.5" opacity="0.45"/><path d="M16 14 Q18 8 22 6 Q26 8 28 14" fill="none" stroke="var(--c-teal-s)" stroke-width="2.5" stroke-linecap="round"/><path d="M16 14 L16 18 M28 14 L28 18" stroke="var(--c-teal-s)" stroke-width="1.5" stroke-linecap="round"/><path d="M18 26 Q22 24 26 26 Q22 28 18 26 Z" fill="var(--c-teal-s)" opacity="0.4"/></symbol>
+<symbol id="ico-oolong" viewBox="0 0 44 44"><path d="M10 18 Q22 14 34 18 L34 32 Q34 36 22 36 Q10 36 10 32 Z" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2" stroke-linejoin="round"/><path d="M16 14 Q22 12 28 14" fill="none" stroke="var(--c-amber-s)" stroke-width="2"/><path d="M18 14 C18 11 19 9 21 8 M22 14 C22 11 23 9 25 8 M26 14 C26 11 25 9 23 8" fill="none" stroke="var(--c-gray-s)" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="22" cy="20" rx="8" ry="3" fill="var(--c-amber-s)" opacity="0.25"/></symbol>
+<symbol id="ico-jasmine" viewBox="0 0 44 44"><circle cx="22" cy="22" r="10" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="2"/><circle cx="22" cy="22" r="4" fill="var(--c-gray-s)" opacity="0.4"/><ellipse cx="22" cy="14" rx="3" ry="5" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="1.5"/><ellipse cx="22" cy="30" rx="3" ry="5" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="1.5"/><ellipse cx="14" cy="22" rx="5" ry="3" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="1.5"/><ellipse cx="30" cy="22" rx="5" ry="3" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="1.5"/><ellipse cx="17" cy="17" rx="4" ry="3" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="1.5" transform="rotate(-45 17 17)"/><ellipse cx="27" cy="17" rx="4" ry="3" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="1.5" transform="rotate(45 27 17)"/><circle cx="22" cy="22" r="2.5" fill="var(--c-amber-s)" opacity="0.5"/></symbol>
+<symbol id="ico-thai-tea" viewBox="0 0 44 44"><path d="M14 8 L30 8 L28 36 C28 38 26 40 22 40 C18 40 16 38 16 36 Z" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2" stroke-linejoin="round"/><path d="M14 18 L30 18" stroke="#FFFAF0" stroke-width="3" opacity="0.7"/><path d="M16 12 C16 14 14 15 14 17" fill="none" stroke="var(--c-amber-s)" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/><path d="M28 12 C28 14 30 15 30 17" fill="none" stroke="var(--c-amber-s)" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/></symbol>
+
+<!-- ==== Bubble Tea Flavor Icons ==== -->
+<symbol id="ico-strawberry" viewBox="0 0 44 44"><path d="M22 12 C14 12 10 20 10 26 C10 33 16 38 22 38 C28 38 34 33 34 26 C34 20 30 12 22 12 Z" fill="var(--c-pink-f)" stroke="var(--c-pink-s)" stroke-width="2" stroke-linejoin="round"/><path d="M16 8 L20 12 M22 6 L22 12 M28 8 L24 12" stroke="var(--c-teal-s)" stroke-width="2" stroke-linecap="round"/><path d="M16 8 L28 8 L22 12 Z" fill="var(--c-teal-f)" stroke="var(--c-teal-s)" stroke-width="2" stroke-linejoin="round"/><circle cx="18" cy="22" r="1" fill="var(--c-pink-s)"/><circle cx="25" cy="20" r="1" fill="var(--c-pink-s)"/><circle cx="22" cy="26" r="1" fill="var(--c-pink-s)"/><circle cx="16" cy="28" r="1" fill="var(--c-pink-s)"/><circle cx="27" cy="28" r="1" fill="var(--c-pink-s)"/></symbol>
+<symbol id="ico-mango" viewBox="0 0 44 44"><defs><linearGradient id="mgo" x1="20%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFE066"/><stop offset="60%" stop-color="#FFB627"/><stop offset="100%" stop-color="#FF8C1A"/></linearGradient></defs><path d="M24 6 C30 8 36 14 36 22 C36 32 30 40 22 40 C14 40 8 34 8 26 C8 20 12 16 16 14 C18 13 20 12 22 10 C23 9 23 7 24 6 Z" fill="url(#mgo)" stroke="#D17A0E" stroke-width="2" stroke-linejoin="round"/><path d="M24 6 L26 2" fill="none" stroke="#8B6914" stroke-width="2" stroke-linecap="round"/><ellipse cx="22" cy="4" rx="4" ry="2" fill="#7FB069" stroke="#5C8A4A" stroke-width="1" transform="rotate(-15 22 4)"/></symbol>
+<symbol id="ico-matcha" viewBox="0 0 44 44"><circle cx="22" cy="24" r="13" fill="var(--c-teal-f)" stroke="var(--c-teal-s)" stroke-width="2"/><circle cx="22" cy="24" r="9" fill="var(--c-teal-s)" opacity="0.18"/><path d="M14 18 Q18 22 22 18 Q26 22 30 18" fill="none" stroke="var(--c-teal-s)" stroke-width="1.5" opacity="0.45"/><path d="M16 14 L18 10 M22 12 L22 8 M28 14 L26 10" stroke="var(--c-teal-s)" stroke-width="2" stroke-linecap="round" opacity="0.35"/></symbol>
+<symbol id="ico-taro" viewBox="0 0 44 44"><ellipse cx="22" cy="24" rx="13" ry="14" fill="var(--c-purple-f)" stroke="var(--c-purple-s)" stroke-width="2"/><path d="M22 10 C18 10 16 14 18 18 C20 22 24 22 26 18 C28 14 26 10 22 10 Z" fill="var(--c-purple-s)" opacity="0.35"/><ellipse cx="18" cy="22" rx="2" ry="3" fill="var(--c-purple-s)" opacity="0.25"/><ellipse cx="26" cy="26" rx="2" ry="3" fill="var(--c-purple-s)" opacity="0.25"/><path d="M16 8 Q22 4 28 8" fill="none" stroke="var(--c-teal-s)" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="ico-passionfruit" viewBox="0 0 44 44"><circle cx="22" cy="22" r="13" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2"/><circle cx="22" cy="22" r="8" fill="none" stroke="var(--c-amber-s)" stroke-width="1.5" opacity="0.35"/><path d="M22 14 L22 30 M14 22 L30 22 M16 16 L28 28 M28 16 L16 28" stroke="var(--c-amber-s)" stroke-width="1" opacity="0.25"/><circle cx="22" cy="22" r="2" fill="var(--c-amber-s)" opacity="0.35"/><circle cx="18" cy="18" r="1.2" fill="var(--c-pink-s)" opacity="0.5"/><circle cx="26" cy="20" r="1.2" fill="var(--c-pink-s)" opacity="0.5"/><circle cx="22" cy="27" r="1.2" fill="var(--c-pink-s)" opacity="0.5"/><circle cx="15" cy="25" r="1.2" fill="var(--c-pink-s)" opacity="0.5"/></symbol>
+<symbol id="ico-lychee" viewBox="0 0 44 44"><circle cx="22" cy="24" r="12" fill="var(--c-pink-f)" stroke="var(--c-pink-s)" stroke-width="2"/><path d="M22 12 C18 10 16 8 18 6" fill="none" stroke="var(--c-teal-s)" stroke-width="2" stroke-linecap="round"/><path d="M18 8 L16 6 M18 8 L20 6 M18 8 L18 5" stroke="var(--c-teal-s)" stroke-width="1.5" stroke-linecap="round"/><circle cx="22" cy="24" r="6" fill="#FFFAF0" stroke="var(--c-pink-s)" stroke-width="1.5"/><ellipse cx="22" cy="22" rx="1.5" ry="2.5" fill="var(--c-amber-s)" opacity="0.45"/></symbol>
+<symbol id="ico-honeydew" viewBox="0 0 44 44"><circle cx="22" cy="24" r="13" fill="#B0E68C" stroke="#4A8A2F" stroke-width="2"/><path d="M14 24 C14 18 20 14 22 14 C24 14 30 18 30 24" fill="#E1F5EE" stroke="#4A8A2F" stroke-width="1.5" opacity="0.7"/><ellipse cx="19" cy="22" rx="1.2" ry="2" fill="#4A8A2F" opacity="0.5"/><ellipse cx="25" cy="22" rx="1.2" ry="2" fill="#4A8A2F" opacity="0.5"/><ellipse cx="22" cy="27" rx="1.2" ry="2" fill="#4A8A2F" opacity="0.5"/><path d="M22 11 L20 9 M22 11 L24 9" stroke="#4A8A2F" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="ico-coffee" viewBox="0 0 44 44"><path d="M10 16 L30 16 L28 34 C28 36 26 38 20 38 C14 38 12 36 12 34 Z" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2" stroke-linejoin="round"/><path d="M30 20 C35 20 35 28 30 28" fill="none" stroke="var(--c-amber-s)" stroke-width="2"/><path d="M16 8 C16 11 14 12 14 14 M22 7 C22 10 20 11 20 13 M28 8 C28 11 26 12 26 14" fill="none" stroke="var(--c-gray-s)" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/></symbol>
+<symbol id="ico-chocolate" viewBox="0 0 44 44"><rect x="8" y="10" width="28" height="24" rx="2" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2"/><path d="M8 18 L36 18 M8 26 L36 26 M18 10 L18 34 M28 10 L28 34" stroke="var(--c-amber-s)" stroke-width="1.5" opacity="0.45"/></symbol>
+<symbol id="ico-blueberry" viewBox="0 0 44 44"><circle cx="16" cy="22" r="7" fill="var(--c-purple-f)" stroke="var(--c-purple-s)" stroke-width="2"/><circle cx="26" cy="18" r="6" fill="var(--c-purple-f)" stroke="var(--c-purple-s)" stroke-width="2"/><circle cx="24" cy="28" r="7" fill="var(--c-purple-f)" stroke="var(--c-purple-s)" stroke-width="2"/><circle cx="16" cy="22" r="2" fill="var(--c-purple-s)" opacity="0.28"/><circle cx="26" cy="18" r="1.5" fill="var(--c-purple-s)" opacity="0.28"/><circle cx="24" cy="28" r="2" fill="var(--c-purple-s)" opacity="0.28"/></symbol>
+
+<!-- ==== Bubble Tea Topping Icons ==== -->
+<symbol id="ico-tapioca" viewBox="0 0 44 44"><circle cx="14" cy="16" r="4.5" fill="#3B2417" stroke="#1a0e08" stroke-width="2"/><circle cx="24" cy="14" r="4.5" fill="#3B2417" stroke="#1a0e08" stroke-width="2"/><circle cx="32" cy="18" r="4.5" fill="#3B2417" stroke="#1a0e08" stroke-width="2"/><circle cx="18" cy="26" r="4.5" fill="#3B2417" stroke="#1a0e08" stroke-width="2"/><circle cx="28" cy="28" r="4.5" fill="#3B2417" stroke="#1a0e08" stroke-width="2"/><circle cx="22" cy="35" r="4.5" fill="#3B2417" stroke="#1a0e08" stroke-width="2"/><circle cx="14" cy="16" r="1.5" fill="#fff" opacity="0.4"/><circle cx="24" cy="14" r="1.5" fill="#fff" opacity="0.4"/><circle cx="32" cy="18" r="1.5" fill="#fff" opacity="0.4"/><circle cx="18" cy="26" r="1.5" fill="#fff" opacity="0.4"/><circle cx="28" cy="28" r="1.5" fill="#fff" opacity="0.4"/><circle cx="22" cy="35" r="1.5" fill="#fff" opacity="0.4"/></symbol>
+<symbol id="ico-grass-jelly" viewBox="0 0 44 44"><rect x="6" y="10" width="13" height="11" rx="2" fill="#1a0e08" stroke="#000" stroke-width="1.5"/><rect x="20" y="10" width="14" height="10" rx="2" fill="#1a0e08" stroke="#000" stroke-width="1.5"/><rect x="6" y="22" width="14" height="13" rx="2" fill="#1a0e08" stroke="#000" stroke-width="1.5"/><rect x="22" y="22" width="14" height="12" rx="2" fill="#1a0e08" stroke="#000" stroke-width="1.5"/><rect x="9" y="13" width="3" height="5" rx="1" fill="#fff" opacity="0.25"/><rect x="24" y="13" width="3" height="4" rx="1" fill="#fff" opacity="0.25"/><rect x="9" y="25" width="3" height="5" rx="1" fill="#fff" opacity="0.25"/></symbol>
+<symbol id="ico-pudding" viewBox="0 0 44 44"><path d="M14 12 L30 12 L28 22 L16 22 Z" fill="#F5D491" stroke="#BA7517" stroke-width="2" stroke-linejoin="round"/><path d="M12 24 L32 24 L30 34 C30 36 28 38 22 38 C16 38 14 36 14 34 Z" fill="#F5D491" stroke="#BA7517" stroke-width="2" stroke-linejoin="round"/><ellipse cx="22" cy="16" rx="6" ry="2" fill="#FFFAF0" opacity="0.6"/><path d="M18 28 C20 30 24 30 26 28" fill="none" stroke="#BA7517" stroke-width="1.5" opacity="0.5"/></symbol>
+<symbol id="ico-cream" viewBox="0 0 44 44"><path d="M12 24 C8 24 8 16 14 16 C14 10 22 8 24 14 C30 12 34 16 32 22 C36 22 36 28 30 28 L14 28 C10 28 8 26 12 24 Z" fill="#FFFAF0" stroke="var(--c-gray-s)" stroke-width="2" stroke-linejoin="round"/><circle cx="22" cy="16" r="2" fill="var(--c-pink-s)" opacity="0.45"/></symbol>
+<symbol id="ico-coconut-jelly" viewBox="0 0 44 44"><rect x="10" y="14" width="7" height="7" rx="1.5" fill="#FFFAF0" stroke="var(--c-gray-s)" stroke-width="1.5"/><rect x="20" y="13" width="7" height="7" rx="1.5" fill="#FFFAF0" stroke="var(--c-gray-s)" stroke-width="1.5"/><rect x="30" y="14" width="6" height="7" rx="1.5" fill="#FFFAF0" stroke="var(--c-gray-s)" stroke-width="1.5"/><rect x="14" y="24" width="7" height="7" rx="1.5" fill="#FFFAF0" stroke="var(--c-gray-s)" stroke-width="1.5"/><rect x="24" y="25" width="7" height="7" rx="1.5" fill="#FFFAF0" stroke="var(--c-gray-s)" stroke-width="1.5"/><circle cx="13.5" cy="17.5" r="0.8" fill="var(--c-amber-s)" opacity="0.4"/><circle cx="23.5" cy="16.5" r="0.8" fill="var(--c-amber-s)" opacity="0.4"/></symbol>
+<symbol id="ico-fruit-pieces" viewBox="0 0 44 44"><circle cx="15" cy="16" r="4" fill="var(--c-pink-f)" stroke="var(--c-pink-s)" stroke-width="1.5"/><circle cx="26" cy="14" r="4" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="1.5"/><circle cx="20" cy="24" r="4" fill="var(--c-teal-f)" stroke="var(--c-teal-s)" stroke-width="1.5"/><circle cx="30" cy="26" r="4" fill="var(--c-pink-f)" stroke="var(--c-pink-s)" stroke-width="1.5"/><circle cx="14" cy="30" r="4" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="1.5"/></symbol>
+<symbol id="ico-choc-chip" viewBox="0 0 44 44"><circle cx="22" cy="22" r="14" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2"/><circle cx="16" cy="16" r="2" fill="var(--c-amber-s)" opacity="0.55"/><circle cx="26" cy="15" r="2" fill="var(--c-amber-s)" opacity="0.55"/><circle cx="28" cy="24" r="2" fill="var(--c-amber-s)" opacity="0.55"/><circle cx="18" cy="27" r="2" fill="var(--c-amber-s)" opacity="0.55"/></symbol>
+<symbol id="ico-marshmallow" viewBox="0 0 44 44"><rect x="8" y="16" width="8" height="14" rx="3" fill="var(--c-pink-f)" stroke="var(--c-pink-s)" stroke-width="2"/><rect x="18" y="12" width="8" height="18" rx="3" fill="var(--c-pink-f)" stroke="var(--c-pink-s)" stroke-width="2"/><rect x="28" y="18" width="8" height="12" rx="3" fill="var(--c-pink-f)" stroke="var(--c-pink-s)" stroke-width="2"/></symbol>
+
+<!-- ==== Glass Icons ==== -->
+<symbol id="ico-glass-tall" viewBox="0 0 44 44"><path d="M15 8 L29 8 L27 38 C27 39 26 40 22 40 C18 40 17 39 17 38 Z" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="2" stroke-linejoin="round"/><path d="M15 16 L29 16" stroke="var(--c-gray-s)" stroke-width="1.5" opacity="0.45"/><path d="M17 24 L27 24" stroke="var(--c-gray-s)" stroke-width="1" opacity="0.25"/><rect x="21" y="2" width="2" height="6" fill="var(--c-gray-s)"/></symbol>
+<symbol id="ico-glass-wide" viewBox="0 0 44 44"><path d="M10 10 L34 10 L30 36 C30 38 28 40 22 40 C16 40 14 38 14 36 Z" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="2" stroke-linejoin="round"/><path d="M10 18 L34 18" stroke="var(--c-gray-s)" stroke-width="1.5" opacity="0.45"/><rect x="21" y="4" width="2" height="6" fill="var(--c-gray-s)"/></symbol>
+<symbol id="ico-glass-goblet" viewBox="0 0 44 44"><path d="M10 8 L34 8 L30 22 C30 26 26 28 22 28 C18 28 14 26 14 22 Z" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="2" stroke-linejoin="round"/><path d="M22 28 L22 36" stroke="var(--c-gray-s)" stroke-width="2"/><path d="M14 36 L30 36" stroke="var(--c-gray-s)" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="ico-glass-mason" viewBox="0 0 44 44"><path d="M13 12 L31 12 L31 38 C31 39 30 40 22 40 C14 40 13 39 13 38 Z" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="2" stroke-linejoin="round"/><rect x="11" y="6" width="22" height="6" rx="1" fill="var(--c-gray-f)" stroke="var(--c-gray-s)" stroke-width="2"/><path d="M13 18 L31 18" stroke="var(--c-gray-s)" stroke-width="1.5" opacity="0.45"/></symbol>
+
+<!-- ==== Avatar Icons ==== -->
+<symbol id="ico-avatar-1" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="var(--c-pink-f)" stroke="var(--c-pink-s)" stroke-width="2"/><circle cx="22" cy="19" r="7" fill="#FFDBAC"/><path d="M15 15 C15 9 18 7 22 7 C26 7 29 9 29 15 L29 19 C29 19 26 16 22 16 C18 16 15 19 15 19 Z" fill="#C45D28"/><circle cx="19" cy="20" r="1.3" fill="#3a3a3a"/><circle cx="25" cy="20" r="1.3" fill="#3a3a3a"/><path d="M19 25 C20 26 24 26 25 25" fill="none" stroke="#3a3a3a" stroke-width="1.3" stroke-linecap="round"/></symbol>
+<symbol id="ico-avatar-2" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="var(--c-amber-f)" stroke="var(--c-amber-s)" stroke-width="2"/><circle cx="22" cy="19" r="7" fill="#D4A76A"/><path d="M15 16 C15 10 18 8 22 8 C26 8 29 10 29 16 L29 20 C29 20 26 17 22 17 C18 17 15 20 15 20 Z" fill="#3B2417"/><circle cx="19" cy="20" r="1.3" fill="#3a3a3a"/><circle cx="25" cy="20" r="1.3" fill="#3a3a3a"/><path d="M19 25 C20 26 24 26 25 25" fill="none" stroke="#3a3a3a" stroke-width="1.3" stroke-linecap="round"/></symbol>
+<symbol id="ico-avatar-3" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="var(--c-blue-f)" stroke="var(--c-blue-s)" stroke-width="2"/><circle cx="22" cy="19" r="7" fill="#FFDBAC"/><path d="M15 14 C15 8 18 6 22 6 C26 6 29 8 29 14 L29 18 C29 18 26 15 22 15 C18 15 15 18 15 18 Z" fill="#1a1a1a"/><circle cx="19" cy="20" r="1.3" fill="#3a3a3a"/><circle cx="25" cy="20" r="1.3" fill="#3a3a3a"/><path d="M19 25 C20 26 24 26 25 25" fill="none" stroke="#3a3a3a" stroke-width="1.3" stroke-linecap="round"/></symbol>
+<symbol id="ico-avatar-4" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="var(--c-teal-f)" stroke="var(--c-teal-s)" stroke-width="2"/><circle cx="22" cy="19" r="7" fill="#FFDBAC"/><path d="M15 14 C15 9 18 7 22 7 C26 7 29 9 29 14 C31 17 31 20 29 20 C29 20 26 16 22 16 C18 16 15 20 15 20 C13 20 13 17 15 14 Z" fill="#FFD700"/><circle cx="19" cy="20" r="1.3" fill="#3a3a3a"/><circle cx="25" cy="20" r="1.3" fill="#3a3a3a"/><path d="M19 25 C20 26 24 26 25 25" fill="none" stroke="#3a3a3a" stroke-width="1.3" stroke-linecap="round"/></symbol>
+<symbol id="ico-avatar-5" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="var(--c-purple-f)" stroke="var(--c-purple-s)" stroke-width="2"/><circle cx="22" cy="19" r="7" fill="#FFDBAC"/><path d="M15 16 C14 10 17 7 22 7 C27 7 30 10 29 16 L29 20 C29 20 26 17 22 17 C18 17 15 20 15 20 Z" fill="#B0B0B0"/><circle cx="19" cy="20" r="1.3" fill="#3a3a3a"/><circle cx="25" cy="20" r="1.3" fill="#3a3a3a"/><path d="M18 24 C19 26 25 26 26 24" fill="none" stroke="#3a3a3a" stroke-width="1.3" stroke-linecap="round"/><path d="M18 24 L17 22 M26 24 L27 22" stroke="#3a3a3a" stroke-width="0.8" stroke-linecap="round"/></symbol>
+<symbol id="ico-avatar-6" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="var(--c-pink-f)" stroke="var(--c-pink-s)" stroke-width="2"/><circle cx="22" cy="19" r="7" fill="#FFDBAC"/><path d="M14 14 L30 14" stroke="#FF6B9D" stroke-width="3"/><path d="M14 14 L14 19 Q14 12 22 12 Q30 12 30 19 L30 14" fill="#FF8CAB" stroke="#FF6B9D" stroke-width="1.5"/><circle cx="19" cy="20" r="1.3" fill="#3a3a3a"/><circle cx="25" cy="20" r="1.3" fill="#3a3a3a"/><path d="M19 25 C20 26 24 26 25 25" fill="none" stroke="#3a3a3a" stroke-width="1.3" stroke-linecap="round"/></symbol>
+</svg>
+
+<div id="gc">
+  <!-- ==== Title Screen ==== -->
+  <div id="ts" class="screen active">
+    <svg class="logo" viewBox="0 0 100 100"><use href="#ico-cup"/></svg>
+    <h1>Boba Dash</h1>
+    <p class="sub">Brew 1,000 bubble teas · Decorate your shop</p>
+    <button class="btn btn-p" id="btn-start">Start Business</button>
+    <button class="btn btn-s hidden" id="btn-cont">Continue</button>
+  </div>
+
+  <!-- ==== Intro / Day Screen ==== -->
+  <div id="is" class="screen">
+    <h2 id="intro-day">Day 1</h2>
+    <div id="intro-content"></div>
+    <button class="btn btn-p" id="btn-begin">Open Shop</button>
+  </div>
+
+  <!-- ==== Game Screen ==== -->
+  <div id="gs" class="screen">
+    <div id="tb">
+      <span class="ti"><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-calendar"/></svg><span id="dn">1</span></span>
+      <span class="ti"><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-coin"/></svg><span id="cn">500</span></span>
+      <span class="ti"><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-stock"/></svg><span id="sk">30</span></span>
+      <span class="ti" id="cd"><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-fire"/></svg><span id="cm">x1.0</span></span>
+      <span class="ti"><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-timer"/></svg><span id="tm">1:00</span></span>
+    </div>
+    <div id="ca"></div>
+    <div id="stepper">
+      <div class="sp-item" data-step="0"><div class="sp-dot"><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-glass-tall"/></svg></div><div class="sp-lbl">Cup</div></div>
+      <div class="sp-line"></div>
+      <div class="sp-item" data-step="1"><div class="sp-dot"><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-black-tea"/></svg></div><div class="sp-lbl">Tea</div></div>
+      <div class="sp-line"></div>
+      <div class="sp-item" data-step="2"><div class="sp-dot"><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-strawberry"/></svg></div><div class="sp-lbl">Flavor</div></div>
+      <div class="sp-line"></div>
+      <div class="sp-item" data-step="3"><div class="sp-dot"><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-blender"/></svg></div><div class="sp-lbl">Blend</div></div>
+      <div class="sp-line"></div>
+      <div class="sp-item" data-step="4"><div class="sp-dot"><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-tapioca"/></svg></div><div class="sp-lbl">Topping</div></div>
+    </div>
+    <div id="ws">
+      <canvas id="scv" width="72" height="72" style="display:none"></canvas>
+      <div id="ws-empty"><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-point-down"/></svg>Pick an option below to start brewing</div>
+    </div>
+    <div id="step-pane"></div>
+    <div id="bar">
+      <button id="btn-trash"><svg class="svg-ico sz-22" viewBox="0 0 44 44"><use href="#ico-trash"/></svg>Trash</button>
+      <button id="btn-serve" disabled><span id="btn-serve-text"><svg class="svg-ico sz-22" viewBox="0 0 44 44"><use href="#ico-cup"/></svg>Pick a Glass</span></button>
+    </div>
+    <div id="tk"></div>
+  </div>
+
+  <!-- ==== Result Screen ==== -->
+  <div id="rs" class="screen">
+    <div class="rc">
+      <div class="rst" id="r-stars"></div>
+      <h2 id="r-title">Day Complete!</h2>
+      <div id="r-stats"></div>
+      <button class="btn btn-p" id="btn-shop" style="margin-top:16px">Continue</button>
+    </div>
+  </div>
+
+  <!-- ==== Shop Screen ==== -->
+  <div id="ss" class="screen">
+    <h2><svg class="svg-ico sz-22" viewBox="0 0 44 44"><use href="#ico-cart"/></svg> Shop</h2>
+    <div id="scoins"><svg class="svg-ico sz-22" viewBox="0 0 44 44"><use href="#ico-coin"/></svg> 500</div>
+    <div class="ssec"><h3><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-stock"/></svg> Restock Ingredients (10 servings)</h3><div id="shop-stock"></div></div>
+    <div class="ssec"><h3><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-palette"/></svg> Wallpaper Themes</h3><div id="shop-wallpapers"></div></div>
+    <div class="ssec"><h3><svg class="svg-ico sz-18" viewBox="0 0 44 44"><use href="#ico-bolt"/></svg> Equipment Upgrades</h3><div id="shop-upgrades"></div></div>
+    <button class="btn btn-p" id="btn-next" style="margin-top:10px">Next Day</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+window.onerror=function(m,s,l,c,e){var d=document.createElement('div');d.style.cssText='position:fixed;top:0;left:0;right:0;background:#FF4757;color:#fff;padding:8px;font-size:12px;z-index:9999;word-break:break-all';d.textContent='JS Error: '+m+' (line '+l+':'+c+') '+(e&&e.message||'');document.body.appendChild(d);return false};
+
+// === Data: Bubble Tea categories ===
+var BASES=[
+  {id:"black_tea",name:"Black Tea",color:"#C8A87C",icon:"black-tea"},
+  {id:"green_tea",name:"Green Tea",color:"#7FB069",icon:"green-tea"},
+  {id:"oolong",name:"Oolong",color:"#A8732E",icon:"oolong"},
+  {id:"jasmine",name:"Jasmine",color:"#D4C7A0",icon:"jasmine"},
+  {id:"thai_tea",name:"Thai Tea",color:"#E07820",icon:"thai-tea"}
+];
+var FLAVORS=[
+  {id:"strawberry",name:"Strawberry",color:"#FF6B9D",icon:"strawberry"},
+  {id:"mango",name:"Mango",color:"#FFB627",icon:"mango"},
+  {id:"matcha",name:"Matcha",color:"#7FB069",icon:"matcha"},
+  {id:"taro",name:"Taro",color:"#9B7EDC",icon:"taro"},
+  {id:"passionfruit",name:"Passion Fruit",color:"#E8C040",icon:"passionfruit"},
+  {id:"lychee",name:"Lychee",color:"#FF8CAB",icon:"lychee"},
+  {id:"honeydew",name:"Honeydew",color:"#90D080",icon:"honeydew"},
+  {id:"coffee",name:"Coffee",color:"#6F4E37",icon:"coffee"},
+  {id:"chocolate",name:"Chocolate",color:"#8B5E3C",icon:"chocolate"},
+  {id:"blueberry",name:"Blueberry",color:"#6B5BD0",icon:"blueberry"}
+];
+var TOPPINGS=[
+  {id:"tapioca",name:"Tapioca",color:"#3B2417",icon:"tapioca"},
+  {id:"grass_jelly",name:"Grass Jelly",color:"#1a0e08",icon:"grass-jelly"},
+  {id:"pudding",name:"Pudding",color:"#F5D491",icon:"pudding"},
+  {id:"cream",name:"Cream Foam",color:"#FFFAF0",icon:"cream"},
+  {id:"coconut_jelly",name:"Coconut Jelly",color:"#FFFAF0",icon:"coconut-jelly"},
+  {id:"fruit_pieces",name:"Fruit Pieces",color:"#FF6B9D",icon:"fruit-pieces"},
+  {id:"choc_chip",name:"Choc Chips",color:"#5C3D24",icon:"choc-chip"},
+  {id:"marshmallow",name:"Marshmallow",color:"#FFB6C1",icon:"marshmallow"}
+];
+var GLASSES=[
+  {id:"tall",name:"Tall",icon:"glass-tall"},
+  {id:"wide",name:"Wide",icon:"glass-wide"},
+  {id:"goblet",name:"Goblet",icon:"glass-goblet"},
+  {id:"mason",name:"Mason",icon:"glass-mason"}
+];
+var WALLPAPERS=[
+  {id:"default",name:"Sakura Pink",bg:"linear-gradient(180deg,#FFF5F0,#FFE8E0)",cost:0},
+  {id:"mint",name:"Mint Breeze",bg:"linear-gradient(135deg,#E0F8F0,#B8E8D8,#98D8C8)",cost:100},
+  {id:"sky",name:"Sky Blue",bg:"linear-gradient(135deg,#E8F4FF,#B0D8F8,#88C8E8)",cost:100},
+  {id:"lavender",name:"Lavender",bg:"linear-gradient(135deg,#F0E8FF,#D8C8F8,#C0A8E8)",cost:150},
+  {id:"sunset",name:"Sunset",bg:"linear-gradient(135deg,#FFF0E0,#FFD8B0,#FFC090)",cost:150},
+  {id:"lemon",name:"Lemon Tea",bg:"linear-gradient(135deg,#FFFDE8,#FFF8B0,#FFF080)",cost:200},
+  {id:"ocean",name:"Ocean Wave",bg:"repeating-linear-gradient(45deg,#E0F0FF,#E0F0FF 20px,#C8E0FF 20px,#C8E0FF 40px)",cost:300},
+  {id:"polka",name:"Polka Pink",bg:"radial-gradient(circle,#FFF 20%,transparent 20%),linear-gradient(135deg,#FFE0EC,#FFC0D9)",size:"20px 20px,100% 100%",cost:300},
+  {id:"geo",name:"Geometric",bg:"repeating-linear-gradient(0deg,rgba(108,180,238,0.15),rgba(108,180,238,0.15) 20px,transparent 20px,transparent 40px),repeating-linear-gradient(90deg,rgba(108,180,238,0.15),rgba(108,180,238,0.15) 20px,transparent 20px,transparent 40px),linear-gradient(135deg,#E8F4FF,#D0E8FF)",cost:400},
+  {id:"rainbow",name:"Rainbow",bg:"linear-gradient(135deg,#FFE0EC,#FFF0E0,#FFFDE8,#E0F8E0,#E0F0FF,#F0E8FF)",cost:500},
+  {id:"wood",name:"Wood Warm",bg:"repeating-linear-gradient(90deg,#F5E6D3,#F5E6D3 30px,#EDD8C0 30px,#EDD8C0 60px)",cost:500},
+  {id:"coral",name:"Coral Stripe",bg:"repeating-linear-gradient(45deg,#FFE8E0,#FFE8E0 15px,#FFD0C0 15px,#FFD0C0 30px)",cost:400}
+];
+var DRINKS=[];
+var save={coins:500,level:1,stars:{},upgrades:{blender:false,patience:false,takeout:false},stock:30,wallpapers:{default:true},currentWallpaper:"default"};
+var game=null,lastTime=0,audioCtx=null;
+var $=function(id){return document.getElementById(id)};
+function S(name,sz){return '<svg class="svg-ico'+(sz?' sz-'+sz:'')+'" viewBox="0 0 44 44"><use href="#ico-'+name+'"/></svg>'}
+var AVATARS=["avatar-1","avatar-2","avatar-3","avatar-4","avatar-5","avatar-6"];
+
+function getDrinkName(b,f,t,g){
+  var fn={strawberry:"Strawberry",mango:"Mango",matcha:"Matcha",taro:"Taro",passionfruit:"Passion Fruit",lychee:"Lychee",honeydew:"Honeydew",coffee:"Coffee",chocolate:"Chocolate",blueberry:"Blueberry"};
+  var bs={black_tea:"Black",green_tea:"Green",oolong:"Oolong",jasmine:"Jasmine",thai_tea:"Thai"};
+  var ts={tapioca:"Boba",grass_jelly:"Jelly",pudding:"Pudding",cream:"Cream",coconut_jelly:"Coconut",fruit_pieces:"Fruit",choc_chip:"Choco",marshmallow:"Mallow"};
+  var gn={tall:"",wide:"(Wide)",goblet:"(Goblet)",mason:"(Mason)"};
+  var n=fn[f]+" "+bs[b];
+  if(ts[t]&&t!=="cream")n+=" "+ts[t];
+  if(g&&gn[g])n+=" "+gn[g];
+  return n+" Tea";
+}
+function genDrinks(){
+  var d=[];
+  var bl=["black_tea","green_tea","oolong","jasmine","thai_tea"];
+  var fl=["strawberry","mango","matcha","taro","passionfruit","lychee","honeydew","coffee","chocolate","blueberry"];
+  var tl=["tapioca","grass_jelly","pudding","cream","coconut_jelly","fruit_pieces","choc_chip","marshmallow"];
+  var gl=["tall","wide","goblet","mason"];
+  var combos=[];
+  for(var fi=0;fi<10;fi++)for(var bi=0;bi<5;bi++)for(var ti=0;ti<8;ti++)for(var gi=0;gi<4;gi++)combos.push([fi,bi,ti,gi]);
+  var seed=12345;
+  for(var i=combos.length-1;i>0;i--){seed=(seed*9301+49297)%233280;var j=Math.floor(seed/233280*(i+1));var tmp=combos[i];combos[i]=combos[j];combos[j]=tmp;}
+  for(var id=0;id<1000;id++){
+    var c=combos[id];
+    var base=bl[c[1]],flavor=fl[c[0]],topping=tl[c[2]],glass=gl[c[3]];
+    var tier=Math.floor(id/100)+1;
+    d.push({id:id,name:getDrinkName(base,flavor,topping,glass),base:base,flavor:flavor,topping:topping,glass:glass,tier:tier,cost:5+(tier-1)*2+(id%3),price:15+(tier-1)*5+(id%3)*2,unlock:Math.ceil((id+1)/10)});
+  }
+  return d;
+}
+function getLevel(lv){
+  if(lv<=4){var eDur=[45,55,65,70][lv-1],eCust=[6,8,10,11][lv-1],ePat=[40,37,35,33][lv-1],eMc=[2,2,3,3][lv-1];return{dur:eDur,cust:eCust,pat:ePat,tk:false,mc:eMc}}
+  var diff=lv-5;
+  return{dur:Math.min(75+diff*4,250),cust:Math.min(12+Math.floor(diff*0.8),32),pat:Math.max(32-Math.floor(diff*0.25),16),tk:true,mc:Math.min(3+Math.floor(diff/6),5),ti:Math.max(35-Math.floor(diff*0.25),12),mtk:Math.min(1+Math.floor(diff/12),3),tkTime:Math.max(45-Math.floor(diff*0.2),20),tkDelay:Math.max(12-Math.floor(diff*0.08),4)};
+}
+
+function hexToRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
+function blend(c1,c2,r){var a=hexToRgb(c1),b=hexToRgb(c2);return"rgb("+Math.round(a[0]*(1-r)+b[0]*r)+","+Math.round(a[1]*(1-r)+b[1]*r)+","+Math.round(a[2]*(1-r)+b[2]*r)+")"}
+
+// === Canvas Drink Rendering (workstation preview + customer card mini) ===
+function drawDrink(canvas,drink,step){
+  if(!canvas)return;
+  var ctx=canvas.getContext("2d");if(!ctx)return;
+  var w=canvas.width,h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  if(!drink||!drink.glass||step<1)return;
+  var cx=w/2,cy=h*0.52,scale=Math.min(w/120,h/145);
+  ctx.save();ctx.translate(cx,cy);ctx.scale(scale,scale);ctx.translate(-60,-75);
+  var gx=60,gy=75,g=drink.glass;
+
+  // Glass bg
+  ctx.beginPath();glassPath(ctx,g,gx,gy);
+  ctx.fillStyle="rgba(255,255,255,0.12)";ctx.fill();
+
+  // Liquid
+  if(step>=2&&drink.base){
+    var bo=BASES.find(function(b){return b.id===drink.base});
+    var fo=drink.flavor?FLAVORS.find(function(f){return f.id===drink.flavor}):null;
+    var lc;
+    if(step>=4&&fo)lc=blend(bo.color,fo.color,0.65);
+    else if(step>=3&&fo)lc=blend(bo.color,fo.color,0.35);
+    else lc=bo.color;
+    ctx.save();ctx.beginPath();glassPath(ctx,g,gx,gy);ctx.clip();
+    ctx.fillStyle=lc;ctx.fillRect(gx-30,gy-50,60,100);ctx.restore();
+  }
+  // Foam
+  if(step>=4){
+    ctx.save();ctx.beginPath();glassPath(ctx,g,gx,gy);ctx.clip();
+    var sy=surfaceY(g,gy);
+    ctx.fillStyle="rgba(255,255,255,0.65)";
+    for(var i=0;i<7;i++){ctx.beginPath();ctx.arc(gx-18+i*6,sy+Math.sin(i*1.5)*2,3.5,0,Math.PI*2);ctx.fill();}
+    ctx.restore();
+  }
+  // Topping
+  if(step>=5&&drink.topping)drawToppingArt(ctx,g,gx,gy,drink.topping);
+  // Straw
+  if(step>=5&&drink.flavor){
+    var fo2=FLAVORS.find(function(f){return f.id===drink.flavor});
+    ctx.save();ctx.strokeStyle=fo2.color;ctx.lineWidth=2.5;ctx.lineCap="round";
+    ctx.beginPath();ctx.moveTo(gx+10,topY(g,gy)-15);ctx.lineTo(gx+5,topY(g,gy)+25);ctx.stroke();ctx.restore();
+  }
+  // Glass outline
+  ctx.beginPath();glassPath(ctx,g,gx,gy);
+  ctx.strokeStyle="rgba(180,180,195,0.7)";ctx.lineWidth=1.5;ctx.stroke();
+  // Goblet stem/base
+  if(g==="goblet"){
+    ctx.beginPath();ctx.moveTo(gx-2,gy+12);ctx.lineTo(gx-2,gy+26);ctx.lineTo(gx+2,gy+26);ctx.lineTo(gx+2,gy+12);
+    ctx.moveTo(gx-11,gy+26);ctx.lineTo(gx+11,gy+26);ctx.lineTo(gx+9,gy+30);ctx.lineTo(gx-9,gy+30);ctx.closePath();
+    ctx.stroke();
+  }
+  // Shine
+  ctx.beginPath();ctx.strokeStyle="rgba(255,255,255,0.35)";ctx.lineWidth=2.5;ctx.lineCap="round";
+  ctx.moveTo(gx-12,topY(g,gy)+8);ctx.lineTo(gx-12,topY(g,gy)+25);ctx.stroke();
+  ctx.restore();
+}
+
+function glassPath(ctx,type,cx,cy){
+  if(type==="tall"){
+    ctx.moveTo(cx-20,cy-38);ctx.lineTo(cx-20,cy+34);
+    ctx.quadraticCurveTo(cx-20,cy+40,cx-14,cy+40);
+    ctx.lineTo(cx+14,cy+40);ctx.quadraticCurveTo(cx+20,cy+40,cx+20,cy+34);
+    ctx.lineTo(cx+20,cy-38);ctx.closePath();
+  }else if(type==="wide"){
+    ctx.moveTo(cx-24,cy-34);ctx.lineTo(cx+24,cy-34);
+    ctx.lineTo(cx+17,cy+29);ctx.quadraticCurveTo(cx+17,cy+34,cx+12,cy+34);
+    ctx.lineTo(cx-12,cy+34);ctx.quadraticCurveTo(cx-17,cy+34,cx-17,cy+29);
+    ctx.closePath();
+  }else if(type==="goblet"){
+    ctx.moveTo(cx-21,cy-26);ctx.lineTo(cx+21,cy-26);
+    ctx.lineTo(cx+12,cy+11);ctx.lineTo(cx-12,cy+11);ctx.closePath();
+  }else if(type==="mason"){
+    ctx.moveTo(cx-21,cy-30);ctx.lineTo(cx-21,cy+32);
+    ctx.quadraticCurveTo(cx-21,cy+38,cx-15,cy+38);
+    ctx.lineTo(cx+15,cy+38);ctx.quadraticCurveTo(cx+21,cy+38,cx+21,cy+32);
+    ctx.lineTo(cx+21,cy-30);ctx.closePath();
+  }
+}
+function topY(t,cy){return t==="tall"?cy-38:t==="wide"?cy-34:t==="goblet"?cy-26:cy-30}
+function botY(t,cy){return t==="tall"?cy+40:t==="wide"?cy+34:t==="goblet"?cy+11:cy+38}
+function surfaceY(t,cy){return topY(t,cy)+(botY(t,cy)-topY(t,cy))*0.22}
+function glassW(t){return t==="tall"?40:t==="wide"?48:t==="goblet"?42:42}
+
+function drawToppingArt(ctx,g,cx,cy,tid){
+  var ty=topY(g,cy);
+  if(tid==="cream"){
+    ctx.fillStyle="#FFFAF0";
+    ctx.beginPath();ctx.arc(cx-12,ty-2,6,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(cx+12,ty-2,6,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(cx,ty-7,8,0,Math.PI*2);ctx.fill();
+  }else if(tid==="tapioca"){
+    var gw=glassW(g);ctx.fillStyle="#3B2417";
+    for(var i=0;i<8;i++){
+      var x=cx-gw/2+5+(i%3)*(gw-10)/2,y=ty-2+Math.floor(i/3)*5;
+      ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fill();
+    }
+    ctx.fillStyle="#fff";
+    for(var j=0;j<6;j++){var x=cx-gw/2+5+(j%3)*(gw-10)/2,y=ty-2+Math.floor(j/3)*5;ctx.beginPath();ctx.arc(x-0.8,y-0.8,0.7,0,Math.PI*2);ctx.fill();}
+  }else if(tid==="grass_jelly"){
+    ctx.save();ctx.beginPath();glassPath(ctx,g,cx,cy);ctx.clip();
+    ctx.fillStyle="#1a0e08";var by=botY(g,cy),gw=glassW(g);
+    for(var i=0;i<5;i++){var x=cx-gw/2+8+(i%2)*(gw-12),y=by-6-Math.floor(i/2)*6;ctx.fillRect(x-3,y-3,6,6);}
+    ctx.restore();
+  }else if(tid==="pudding"){
+    ctx.save();ctx.beginPath();glassPath(ctx,g,cx,cy);ctx.clip();
+    ctx.fillStyle="#F5D491";ctx.strokeStyle="#BA7517";var by=botY(g,cy),gw=glassW(g);
+    ctx.beginPath();ctx.moveTo(cx-gw/2+6,by-4);ctx.lineTo(cx+gw/2-6,by-4);
+    ctx.lineTo(cx+gw/2-10,by+6);ctx.lineTo(cx-gw/2+10,by+6);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.restore();
+  }else if(tid==="coconut_jelly"){
+    ctx.save();ctx.beginPath();glassPath(ctx,g,cx,cy);ctx.clip();
+    ctx.fillStyle="#FFFAF0";ctx.strokeStyle="#C8C8B0";var by=botY(g,cy),gw=glassW(g);
+    for(var i=0;i<4;i++){var x=cx-gw/2+6+(i%2)*(gw-12),y=by-5-Math.floor(i/2)*7;ctx.fillRect(x-3,y-3,6,6);ctx.strokeRect(x-3,y-3,6,6);}
+    ctx.restore();
+  }else if(tid==="fruit_pieces"){
+    var sy=surfaceY(g,cy);var cols=["#FF6347","#FFD700","#7FB069","#FF6B9D","#FFA500"];
+    for(var i=0;i<5;i++){ctx.fillStyle=cols[i%5];ctx.beginPath();ctx.arc(cx-10+i*5,sy-2+Math.sin(i*2)*2,2.5,0,Math.PI*2);ctx.fill();}
+  }else if(tid==="choc_chip"){
+    var sy2=surfaceY(g,cy);ctx.fillStyle="#5C3D24";
+    for(var i=0;i<7;i++){ctx.beginPath();ctx.arc(cx-12+(i*4)%24,sy2-6-Math.floor(i/5)*3,1.5,0,Math.PI*2);ctx.fill();}
+  }else if(tid==="marshmallow"){
+    ctx.fillStyle="#FFB6C1";
+    ctx.fillRect(cx-10,ty-7,5,7);ctx.fillRect(cx-1,ty-9,5,9);ctx.fillRect(cx+7,ty-6,5,6);
+    ctx.fillStyle="#FF99B0";ctx.fillRect(cx-9,ty-5,3,2);ctx.fillRect(cx,ty-7,3,2);ctx.fillRect(cx+8,ty-4,3,2);
+  }
+}
+
+// === Audio (simple Web Audio tones) ===
+function initAudio(){try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}
+function tone(f,d,t,v){if(!audioCtx)return;var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||"sine";o.frequency.value=f;g.gain.setValueAtTime(v||0.2,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}
+function snd(name){
+  try{
+    if(!audioCtx)return;
+    if(name==="coin"){tone(880,.1,"sine",.15);setTimeout(function(){tone(1320,.15,"sine",.15)},80)}
+    else if(name==="correct"){tone(660,.08,"sine",.12);setTimeout(function(){tone(880,.1,"sine",.12)},60)}
+    else if(name==="wrong"){tone(200,.2,"sawtooth",.12)}
+    else if(name==="blend"){tone(120,.4,"sawtooth",.08)}
+    else if(name==="phone"){tone(1000,.12,"square",.08);setTimeout(function(){tone(1000,.12,"square",.08)},180)}
+    else if(name==="happy"){tone(523,.1,"sine",.12);setTimeout(function(){tone(659,.1,"sine",.12)},80);setTimeout(function(){tone(784,.15,"sine",.12)},160)}
+    else if(name==="angry"){tone(400,.15,"sawtooth",.12);setTimeout(function(){tone(280,.2,"sawtooth",.12)},100)}
+    else if(name==="combo"){tone(659,.08,"sine",.1);setTimeout(function(){tone(880,.08,"sine",.1)},60);setTimeout(function(){tone(1047,.12,"sine",.1)},120)}
+  }catch(e){}
+}
+
+// === Save/Load ===
+function saveGame(){try{localStorage.setItem("boba_dash_save",JSON.stringify(save))}catch(e){}}
+function loadSave(){try{var d=localStorage.getItem("boba_dash_save");if(d){var s=JSON.parse(d);if(s&&typeof s==="object"){save.coins=parseInt(s.coins)||0;save.level=Math.min(Math.max(parseInt(s.level)||1,1),108);save.stars=s.stars||{};save.upgrades=Object.assign({blender:false,patience:false,takeout:false},s.upgrades||{});save.stock=parseInt(s.stock)||30;save.wallpapers=s.wallpapers||{default:true};save.currentWallpaper=s.currentWallpaper||"default"}}}catch(e){}}
+function applyWallpaper(){
+  var wp=WALLPAPERS.find(function(w){return w.id===save.currentWallpaper});
+  if(!wp)wp=WALLPAPERS[0];
+  var gc=document.getElementById("gc");
+  if(gc){gc.style.background=wp.bg;gc.style.backgroundSize=wp.size||""}
+}
+
+// === Game Flow ===
+function showScreen(name){
+  var screens=["ts","is","gs","rs","ss"];
+  screens.forEach(function(s){$(s).classList.toggle("active",s===name)});
+  // Reset scroll position on every screen switch so the new screen starts at top
+  try{$(name).scrollTop=0}catch(e){}
+}
+
+function startGame(){initAudio();save={coins:500,level:1,stars:{},upgrades:{blender:false,patience:false,takeout:false},stock:30,wallpapers:{default:true},currentWallpaper:"default"};saveGame();applyWallpaper();showIntro()}
+function continueGame(){initAudio();showIntro()}
+
+function showIntro(){
+  var lv=save.level;var L=getLevel(lv);
+  $("intro-day").textContent="Day "+lv;
+  var html='<div class="ndrinks">';
+  var si=(lv-1)*10,ei=lv*10;
+  for(var i=si;i<ei&&i<DRINKS.length;i++){
+    html+='<span class="nd">'+DRINKS[i].name+'</span>';
+  }
+  html+="</div>";
+  html+='<p style="font-size:12px;color:#aaa;margin:8px 0">Stock: '+save.stock+' servings | Coins: '+save.coins+'</p>';
+  if(lv===1){
+    html+='<div class="tut"><strong>How To Play</strong>1. Read customer order: cup · tea · flavor · blend · topping<br>2. Make drinks in the same order<br>3. Tap "SERVE" to deliver when ready<br>4. Chain serves for combo bonuses!<br>5. Each serve uses 1 ingredient — restock at the shop<br>6. Visit the shop to restock, buy wallpapers &amp; upgrades<br>7. From Day 5 onwards, takeout orders unlock (1.8x reward!)</div>';
+  }
+  if(lv===5)html+='<div class="tut" style="border-color:var(--yellow)"><strong>Takeout Unlocked!</strong>Answer the phone, complete delivery orders in time, earn 1.8x reward!</div>';
+  else if(L.tk)html+='<p style="color:var(--yellow);font-size:13px;margin:10px 0">Takeout continues</p>';
+  // Show subtle scroll-hint only when there's a tutorial (likely overflow)
+  var needsHint=(lv===1||lv===5);
+  if(needsHint)html+='<div class="scroll-hint" aria-hidden="true"><svg viewBox="0 0 44 44" class="svg-ico"><use href="#ico-point-down"/></svg></div>';
+  $("intro-content").innerHTML=html;
+  // Auto-scroll to top on entry
+  var isEl=$("is");if(isEl)isEl.scrollTop=0;
+  // Reset button stickiness for fresh visit
+  showScreen("is");
+}
+
+function beginLevel(){
+  var lv=save.level,L=getLevel(lv);
+  game={state:"playing",level:L,lv:lv,timeLeft:L.dur,coins:save.coins,earned:0,combo:0,maxCombo:0,
+    served:0,lost:0,tkServed:0,tkLost:0,spawned:0,
+    customers:[],takeouts:[],currentDrink:null,spawnTimer:0.5,stock:save.stock+10,
+    tkTimer:L.tk?(L.tkDelay||15):0,blendTimer:0,blendDur:0.3,phoneRinging:false,phoneTimer:0,
+    nextCid:0,nextTid:0};
+  applyWallpaper();
+  $("ca").innerHTML="";$("tk").innerHTML="";
+  $("dn").textContent=lv;$("cn").textContent=game.coins;$("sk").textContent=game.stock;$("cm").textContent="x1.0";
+  $("tm").textContent=fmtTime(L.dur);
+  $("btn-trash").disabled=true;$("btn-serve").disabled=true;
+  renderStepPane();updateWorkstation();renderStepper();
+  showScreen("gs");
+}
+
+function endLevel(){
+  game.state="ended";
+  var total=game.served+game.lost;
+  var rate=total>0?game.served/total:0;
+  var stars=0;
+  if(rate>=0.8&&game.lost<=1)stars=3;
+  else if(rate>=0.6)stars=2;
+  else if(rate>=0.4)stars=1;
+  save.stars[game.lv]=Math.max(save.stars[game.lv]||0,stars);
+  save.coins=game.coins;save.stock=game.stock;
+  saveGame();
+
+  var starsHtml="";
+  for(var i=0;i<stars;i++)starsHtml+='<svg viewBox="0 0 44 44"><use href="#ico-star"/></svg>';
+  for(var i=stars;i<3;i++)starsHtml+='<svg viewBox="0 0 44 44"><use href="#ico-star-empty"/></svg>';
+  $("r-stars").innerHTML=starsHtml;
+  $("r-title").textContent=stars===3?"Perfect Day!":stars>=1?"Day Complete":"Try Again";
+  var stats=""+
+    '<div class="rstat"><span>Customers Served</span><span class="v">'+game.served+"/"+total+'</span></div>'+
+    '<div class="rstat"><span>Customers Lost</span><span class="v">'+game.lost+'</span></div>'+
+    '<div class="rstat"><span>Takeouts Done</span><span class="v">'+game.tkServed+'</span></div>'+
+    '<div class="rstat"><span>Today Earnings</span><span class="v">+'+game.earned+' $</span></div>'+
+    '<div class="rstat"><span>Best Combo</span><span class="v">x'+game.maxCombo+'</span></div>'+
+    '<div class="rstat"><span>Total Coins</span><span class="v">'+game.coins+' $</span></div>';
+  $("r-stats").innerHTML=stats;
+  showScreen("rs");
+}
+
+function goToShop(){
+  $("scoins").innerHTML=S("coin","22")+' '+game.coins;
+  // Restock
+  var restockHtml='<div class="si2"><div class="info"><div class="nm">Restock 10 Servings</div><div class="ds">Current stock: '+game.stock+' servings</div></div>';
+  if(game.coins>=30)restockHtml+='<button class="buy" data-restock="1" data-cost="30">30 $</button>';
+  else restockHtml+='<button class="locked">30 $</button>';
+  restockHtml+="</div>";
+  $("shop-stock").innerHTML=restockHtml;
+  document.querySelectorAll("#shop-stock .buy").forEach(function(btn){
+    btn.onclick=function(){
+      if(game.coins>=30){game.coins-=30;game.stock+=10;save.coins=game.coins;save.stock=game.stock;saveGame();goToShop();snd("coin")}
+    };
+  });
+  // Wallpapers
+  var wpHtml="";
+  WALLPAPERS.forEach(function(wp){
+    var owned=save.wallpapers[wp.id];
+    var isCurrent=save.currentWallpaper===wp.id;
+    wpHtml+='<div class="wp-item'+(isCurrent?' selected':'')+'">';
+    wpHtml+='<div class="wp-swatch" style="background:'+wp.bg+';background-size:'+(wp.size||'')+'"></div>';
+    wpHtml+='<div class="info"><div class="nm">'+wp.name+'</div><div class="ds">'+(wp.cost===0?'Default':'Price '+wp.cost+' $')+'</div></div>';
+    if(isCurrent){wpHtml+='<button class="owned">In Use</button>'}
+    else if(owned){wpHtml+='<button class="buy select-wp" data-wpid="'+wp.id+'">Use</button>'}
+    else if(game.coins>=wp.cost){wpHtml+='<button class="buy" data-wpid="'+wp.id+'" data-cost="'+wp.cost+'">'+wp.cost+' $</button>'}
+    else{wpHtml+='<button class="locked">'+wp.cost+' $</button>'}
+    wpHtml+="</div>";
+  });
+  $("shop-wallpapers").innerHTML=wpHtml;
+  document.querySelectorAll("#shop-wallpapers .buy").forEach(function(btn){
+    btn.onclick=function(){
+      var wpid=btn.dataset.wpid;
+      if(btn.classList.contains("select-wp")){
+        save.currentWallpaper=wpid;saveGame();applyWallpaper();goToShop();snd("correct");
+      }else{
+        var cost=parseInt(btn.dataset.cost);
+        if(game.coins>=cost){game.coins-=cost;save.wallpapers[wpid]=true;save.currentWallpaper=wpid;save.coins=game.coins;saveGame();applyWallpaper();goToShop();snd("coin")}
+      }
+    };
+  });
+  // Upgrades
+  var upg=[
+    {id:"blender",name:"Turbo Blender",desc:"Blend time -33%",cost:300},
+    {id:"patience",name:"Patient Decor",desc:"Customer patience +5s",cost:500},
+    {id:"takeout",name:"Insulated Delivery",desc:"Takeout reward +20%",cost:800}
+  ];
+  var upgHtml="";
+  upg.forEach(function(u){
+    var owned=save.upgrades[u.id];
+    var canBuy=!owned&&game.coins>=u.cost;
+    upgHtml+='<div class="si2"><div class="info"><div class="nm">'+u.name+'</div><div class="ds">'+u.desc+'</div></div>';
+    if(owned)upgHtml+='<button class="owned">Owned</button>';
+    else if(canBuy)upgHtml+='<button class="buy" data-upg="'+u.id+'" data-cost="'+u.cost+'">'+u.cost+' $</button>';
+    else upgHtml+='<button class="locked">'+u.cost+' $</button>';
+    upgHtml+="</div>";
+  });
+  $("shop-upgrades").innerHTML=upgHtml;
+  document.querySelectorAll("#shop-upgrades .buy").forEach(function(btn){
+    btn.onclick=function(){
+      var id=btn.dataset.upg,cost=parseInt(btn.dataset.cost);
+      if(game.coins>=cost){game.coins-=cost;save.upgrades[id]=true;save.coins=game.coins;saveGame();goToShop();snd("coin")}
+    };
+  });
+  $("btn-next").textContent=game.lv>=108?"Finish":"Next Day";
+  showScreen("ss");
+}
+
+function nextLevel(){
+  if(game.lv>=108){showScreen("ts");$("btn-cont").classList.add("hidden");return}
+  save.stock=game.stock;save.level++;saveGame();showIntro();
+}
+
+// === Customers ===
+function spawnCustomer(){
+  var maxAvail=Math.min(game.lv*10,DRINKS.length);
+  var drinkId=Math.floor(Math.random()*maxAvail);
+  var type="normal";
+  if(game.lv>=3&&Math.random()<0.2)type="imp";
+  if(Math.random()<0.06)type="vip";
+  var pat=game.level.pat;
+  if(type==="imp")pat*=0.7;
+  if(type==="vip")pat*=0.8;
+  if(save.upgrades.patience)pat+=5;
+  var av=AVATARS[Math.floor(Math.random()*AVATARS.length)];
+  var c={id:game.nextCid++,type:type,drinkId:drinkId,patience:pat,maxPatience:pat,avatar:av};
+  var drink=DRINKS[drinkId];
+  var card=document.createElement("div");
+  card.className="cc"+(type==="vip"?" vip":type==="imp"?" imp":"");
+  card.dataset.id=c.id;
+  var tl="";
+  if(type==="vip")tl='<div class="tl" style="background:var(--yellow)">VIP</div>';
+  else if(type==="imp")tl='<div class="tl" style="background:var(--red)">URG</div>';
+  card.innerHTML='<svg class="av svg-ico sz-38" viewBox="0 0 44 44"><use href="#ico-'+av+'"/></svg>'+tl+
+    '<div class="info">'+
+    '<div class="on">'+drink.name+'</div>'+
+    '<div class="oi">'+orderIcons(drink)+'</div>'+
+    '<div class="pb"><div class="pf" style="width:100%;background:#7FB069"></div></div>'+
+    '</div>'+
+    '<canvas class="oc" width="46" height="58"></canvas>';
+  $("ca").appendChild(card);
+  drawDrink(card.querySelector(".oc"),drink,5);
+  c.element=card;c.patEl=card.querySelector(".pf");
+  game.customers.push(c);
+  snd("correct");highlightMatchingOrders();
+}
+
+function customerLeaves(c){
+  var drink=DRINKS[c.drinkId];var pen=Math.round(drink.price*0.2);
+  game.coins=Math.max(0,game.coins-pen);game.lost++;game.combo=0;
+  floatText("-"+pen+' $',"#FF4757",c.element);
+  c.element.style.animation="fadeOut .3s";setTimeout(function(){c.element.remove()},300);
+  game.customers=game.customers.filter(function(x){return x.id!==c.id});
+  snd("angry");highlightMatchingOrders();$("cd").classList.remove("hot");
+}
+
+function orderIcons(drink){
+  var g=GLASSES.find(function(x){return x.id===drink.glass});
+  var b=BASES.find(function(x){return x.id===drink.base});
+  var f=FLAVORS.find(function(x){return x.id===drink.flavor});
+  var t=TOPPINGS.find(function(x){return x.id===drink.topping});
+  return '<svg class="svg-ico sz-34" viewBox="0 0 44 44"><use href="#ico-'+g.icon+'"/></svg>'+
+         '<svg class="svg-ico sz-34" viewBox="0 0 44 44"><use href="#ico-'+b.icon+'"/></svg>'+
+         '<svg class="svg-ico sz-34" viewBox="0 0 44 44"><use href="#ico-'+f.icon+'"/></svg>'+
+         '<svg class="svg-ico sz-34" viewBox="0 0 44 44"><use href="#ico-'+t.icon+'"/></svg>';
+}
+
+// === Takeout ===
+function ringPhone(){
+  if(game.phoneRinging)return;
+  game.phoneRinging=true;game.phoneTimer=10;renderTakeout();snd("phone");
+}
+function acceptTakeout(){
+  if(!game.phoneRinging)return;
+  game.phoneRinging=false;
+  var maxAvail=Math.min(game.lv*10,DRINKS.length);
+  var drinkId=Math.floor(Math.random()*maxAvail);
+  var o={id:game.nextTid++,drinkId:drinkId,timeLeft:game.level.tkTime||45,maxTime:game.level.tkTime||45};
+  game.takeouts.push(o);renderTakeout();snd("correct");
+}
+function takeoutExpired(o){
+  var drink=DRINKS[o.drinkId];var pen=Math.round(drink.price*0.5);
+  game.coins=Math.max(0,game.coins-pen);game.tkLost++;game.combo=0;
+  floatText("Time out! -"+pen+' $',"#FF4757",o.element);
+  o.element.remove();game.takeouts=game.takeouts.filter(function(x){return x.id!==o.id});
+  snd("angry");highlightMatchingOrders();$("cd").classList.remove("hot");
+}
+function renderTakeout(){
+  var area=$("tk");area.innerHTML="";
+  if(game.phoneRinging){
+    var p=document.createElement("div");p.className="pr";p.innerHTML=S("phone","22")+'<span>Ring! Tap to accept</span>';
+    p.onclick=acceptTakeout;area.appendChild(p);
+  }
+  game.takeouts.forEach(function(o){
+    var drink=DRINKS[o.drinkId];
+    var card=document.createElement("div");card.className="tc";card.dataset.id=o.id;
+    card.innerHTML='<svg class="tb-emoji svg-ico sz-22" viewBox="0 0 44 44"><use href="#ico-scooter"/></svg><div class="info"><div class="on">'+drink.name+'</div><div class="oi">'+orderIcons(drink)+'</div><div class="tt" id="tt-'+o.id+'">'+Math.ceil(o.timeLeft)+'s</div></div><canvas class="oc" width="34" height="46"></canvas>';
+    area.appendChild(card);drawDrink(card.querySelector(".oc"),drink,5);
+    o.element=card;o.timerEl=card.querySelector(".tt");
+  });
+  highlightMatchingOrders();
+}
+
+// === Making ===
+function selectIngredient(type,id){
+  if(!game||game.state!=="playing")return;
+  if(game.blendTimer>0)return;
+  var sm={glass:0,base:1,flavor:2,topping:4};
+  var es=sm[type];
+  if(!game.currentDrink){if(type!=="glass")return;game.currentDrink={glass:null,base:null,flavor:null,blended:false,topping:null,step:0}}
+  var cd=game.currentDrink;if(cd.step!==es)return;
+  cd[type]=id;
+  if(type==="glass")cd.step=1;else if(type==="base")cd.step=2;else if(type==="flavor")cd.step=3;else if(type==="topping")cd.step=5;
+  snd("correct");updateWorkstation();renderStepper();renderStepPane();updateBottomBar();
+  if(cd.step===5){highlightMatchingOrders()}
+}
+function doBlend(){
+  if(!game.currentDrink||game.currentDrink.step!==3)return;
+  if(game.blendTimer>0)return;
+  game.blendDur=save.upgrades.blender?0.2:0.3;
+  game.blendTimer=game.blendDur;
+  renderStepPane();snd("blend");
+}
+function completeBlend(){
+  game.currentDrink.blended=true;game.currentDrink.step=4;
+  updateWorkstation();renderStepper();renderStepPane();updateBottomBar();
+}
+function trashDrink(){
+  if(!game.currentDrink&&game.blendTimer<=0)return;
+  game.currentDrink=null;game.blendTimer=0;
+  updateWorkstation();renderStepper();renderStepPane();highlightMatchingOrders();updateBottomBar();
+}
+
+// === Serve ===
+function findMatch(){
+  if(!game.currentDrink||game.currentDrink.step!==5)return null;
+  var cd=game.currentDrink;
+  function ok(drink){return cd.glass===drink.glass&&cd.base===drink.base&&cd.flavor===drink.flavor&&cd.topping===drink.topping}
+  for(var i=0;i<game.customers.length;i++){if(ok(DRINKS[game.customers[i].drinkId]))return{type:"customer",obj:game.customers[i]}}
+  for(var j=0;j<game.takeouts.length;j++){if(ok(DRINKS[game.takeouts[j].drinkId]))return{type:"takeout",obj:game.takeouts[j]}}
+  return null;
+}
+function tryServe(){
+  if(!game.currentDrink||game.currentDrink.step!==5){floatText("Make the tea first!","#FF4757",$("ws"));return}
+  if(game.stock<=0){floatText("Out of stock! Shop","#FF4757",$("ws"));snd("wrong");return}
+  var m=findMatch();
+  if(!m){floatText("No matching order!","#FF4757",$("bar"));snd("wrong");return}
+  if(m.type==="customer")serveCustomer(m.obj);else serveTakeout(m.obj);
+}
+
+function getComboMult(){if(game.combo<3)return 1;if(game.combo<6)return 1.5;if(game.combo<10)return 2;return 3}
+function calcTip(c){var r=c.patience/c.maxPatience;if(r>0.6)return 1;if(r>0.3)return 0.5;return 0}
+
+function serveCustomer(c){
+  var drink=DRINKS[c.drinkId];var cm=getComboMult();var tip=calcTip(c);
+  var earn=Math.round(drink.price*(1+tip*0.3)*cm);
+  game.coins+=earn;game.earned+=earn;game.served++;game.combo++;game.stock--;
+  if(game.combo>game.maxCombo)game.maxCombo=game.combo;
+  floatText("+"+earn+' $',"#FFB627",c.element);
+  c.element.style.animation="fadeOut .3s";setTimeout(function(){c.element.remove()},300);
+  game.customers=game.customers.filter(function(x){return x.id!==c.id});
+  game.currentDrink=null;snd("coin");
+  if(game.combo>=3){snd("combo");$("cd").classList.add("hot")}
+  updateWorkstation();renderStepper();renderStepPane();highlightMatchingOrders();updateBottomBar();
+}
+
+function serveTakeout(o){
+  var drink=DRINKS[o.drinkId];var mult=save.upgrades.takeout?2.0:1.8;
+  var earn=Math.round(drink.price*mult);
+  game.coins+=earn;game.earned+=earn;game.tkServed++;game.combo++;game.stock--;
+  if(game.combo>game.maxCombo)game.maxCombo=game.combo;
+  floatText("+"+earn+' $ Takeout',"#FFB627",o.element);
+  o.element.remove();game.takeouts=game.takeouts.filter(function(x){return x.id!==o.id});
+  game.currentDrink=null;snd("coin");
+  if(game.combo>=3){snd("combo");$("cd").classList.add("hot")}
+  updateWorkstation();renderStepper();renderStepPane();highlightMatchingOrders();updateBottomBar();renderTakeout();
+}
+
+// === UI ===
+function fmtTime(s){var m=Math.floor(s/60),ss=Math.floor(s%60);return m+":"+(ss<10?"0":"")+ss}
+
+function renderStepper(){
+  var items=document.querySelectorAll("#stepper .sp-item");
+  var lines=document.querySelectorAll("#stepper .sp-line");
+  var cd=game?game.currentDrink:null;
+  var step=cd?cd.step:0;
+  var doneCount=step;
+  items.forEach(function(it,i){
+    it.classList.remove("done","active");
+    if(i<doneCount)it.classList.add("done");
+    else if(i===doneCount)it.classList.add("active");
+  });
+  lines.forEach(function(ln,i){ln.classList.toggle("done",i<doneCount)});
+}
+
+function renderStepPane(){
+  var pane=$("step-pane");if(!pane||!game){return}
+  var cd=game.currentDrink;
+  var step=cd?cd.step:0;
+  pane.innerHTML="";
+  if(step===0){
+    pane.innerHTML='<div class="sp-title"><span class="sp-num">1</span>Choose a Glass</div><div class="sp-sub">Pick a glass to start your tea</div><div class="sp-grid" id="step-grid"></div>';
+    var grid=pane.querySelector("#step-grid");
+    GLASSES.forEach(function(g){
+      var b=document.createElement("button");b.className="sp-card";
+      b.innerHTML='<div class="sp-icon">'+S(g.icon,'')+'</div><div class="sp-name">'+g.name+'</div>';
+      b.onclick=function(){selectIngredient("glass",g.id)};
+      grid.appendChild(b);
+    });
+  }else if(step===1){
+    pane.innerHTML='<div class="sp-title"><span class="sp-num">2</span>Choose a Tea Base</div><div class="sp-sub">The tea defines the main character</div><div class="sp-grid cols-3" id="step-grid"></div>';
+    var g1=pane.querySelector("#step-grid");
+    BASES.forEach(function(b){
+      var btn=document.createElement("button");btn.className="sp-card";
+      btn.innerHTML='<div class="sp-icon">'+S(b.icon,'')+'</div><div class="sp-name">'+b.name+'</div>';
+      btn.onclick=function(){selectIngredient("base",b.id)};
+      g1.appendChild(btn);
+    });
+  }else if(step===2){
+    pane.innerHTML='<div class="sp-title"><span class="sp-num">3</span>Choose a Flavor</div><div class="sp-sub">Flavor brings the unique taste</div><div class="sp-grid cols-4" id="step-grid"></div>';
+    var g2=pane.querySelector("#step-grid");
+    FLAVORS.forEach(function(f){
+      var btn=document.createElement("button");btn.className="sp-card";
+      btn.innerHTML='<div class="sp-icon">'+S(f.icon,'')+'</div><div class="sp-name">'+f.name+'</div>';
+      btn.onclick=function(){selectIngredient("flavor",f.id)};
+      g2.appendChild(btn);
+    });
+  }else if(step===3){
+    var blending=game.blendTimer>0;
+    var pct=0;if(game.blendDur>0)pct=Math.round((1-game.blendTimer/game.blendDur)*100);
+    if(pct<0)pct=0;if(pct>100)pct=100;
+    pane.innerHTML='<div id="blend-stage"><div class="sp-title" style="font-size:18px;justify-content:center"><span class="sp-num">4</span>Blend!</div>'+
+      '<button id="blend-btn"'+(blending?' class="blending" disabled':'')+'><span class="bl-icon">'+S("blender","")+'</span>'+(blending?'Blending…':'Tap to Blend')+'</button>'+
+      (blending?'<div id="blend-progress"><div id="blend-progress-fill" style="width:'+pct+'%"></div></div>':'<div style="color:var(--text2);font-size:14px">Once blended, choose a topping</div>')+
+      '</div>';
+    if(!blending){var bb=pane.querySelector("#blend-btn");if(bb)bb.onclick=doBlend}
+  }else if(step===4){
+    pane.innerHTML='<div class="sp-title"><span class="sp-num">5</span>Choose a Topping</div><div class="sp-sub">Final touch! Pick a topping</div><div class="sp-grid cols-4" id="step-grid"></div>';
+    var g4=pane.querySelector("#step-grid");
+    TOPPINGS.forEach(function(t){
+      var btn=document.createElement("button");btn.className="sp-card";
+      btn.innerHTML='<div class="sp-icon">'+S(t.icon,'')+'</div><div class="sp-name">'+t.name+'</div>';
+      btn.onclick=function(){selectIngredient("topping",t.id)};
+      g4.appendChild(btn);
+    });
+  }else if(step===5){
+    pane.innerHTML='<div id="blend-stage"><svg class="svg-ico sz-80" viewBox="0 0 44 44"><use href="#ico-check"/></svg><div style="font-size:20px;font-weight:700;color:var(--green)">Tea Ready!</div><div style="color:var(--text2);font-size:14px;text-align:center;line-height:1.6">Tap "SERVE" below<br>to deliver to the matching customer</div></div>';
+  }
+}
+
+function updateWorkstation(){
+  var canvas=$("scv");var empty=$("ws-empty");
+  if(!canvas||!empty)return;
+  if(!game||!game.currentDrink){canvas.style.display="none";empty.style.display="flex";return}
+  canvas.style.display="block";empty.style.display="none";
+  drawDrink(canvas,game.currentDrink,game.currentDrink.step);
+}
+
+function highlightMatchingOrders(){
+  document.querySelectorAll(".cc.selected,.tc.selected").forEach(function(el){el.classList.remove("selected")});
+  if(!game||!game.currentDrink||game.currentDrink.step!==5)return;
+  var m=findMatch();
+  if(m)m.obj.element.classList.add("selected");
+}
+
+function updateBottomBar(){
+  if(!game)return;
+  var cd=game.currentDrink;
+  $("btn-trash").disabled=(!cd&&game.blendTimer<=0);
+  var btn=$("btn-serve");var txt=$("btn-serve-text");
+  if(!cd){
+    btn.disabled=true;txt.innerHTML=S("cup","22")+" Choose a Glass";
+  }else if(cd.step<5){
+    btn.disabled=true;
+    if(cd.step===3&&game.blendTimer>0)txt.textContent="Blending…";
+    else if(cd.step===3)txt.textContent="Tap to Blend";
+    else if(cd.step===0)txt.textContent="Choose a Glass";
+    else if(cd.step===1)txt.textContent="Choose a Tea";
+    else if(cd.step===2)txt.textContent="Choose a Flavor";
+    else if(cd.step===4)txt.textContent="Choose a Topping";
+  }else{
+    btn.disabled=false;txt.innerHTML=S("check","22")+" Serve";
+  }
+}
+
+function floatText(html,color,el){
+  if(!el)return;var ft=document.createElement("div");ft.className="ft";ft.innerHTML=html;ft.style.color=color;
+  var rect=el.getBoundingClientRect(),cr=$("gs").getBoundingClientRect();
+  ft.style.left=(rect.left-cr.left+rect.width/2-20)+"px";ft.style.top=(rect.top-cr.top+10)+"px";
+  $("gs").appendChild(ft);setTimeout(function(){ft.remove()},1000);
+}
+
+// === Game Loop ===
+function update(dt){
+  game.timeLeft-=dt;
+  if(game.timeLeft<=0){endLevel();return}
+  game.spawnTimer-=dt;
+  if(game.spawnTimer<=0&&game.spawned<game.level.cust){
+    if(game.customers.length<game.level.mc){spawnCustomer();game.spawned++}
+    game.spawnTimer=(game.level.dur/game.level.cust)*(0.7+Math.random()*0.6);
+  }
+  for(var i=game.customers.length-1;i>=0;i--){
+    var c=game.customers[i];c.patience-=dt;
+    var r=c.patience/c.maxPatience;
+    c.patEl.style.width=Math.max(0,r*100)+"%";
+    c.patEl.style.background=r>0.5?"#7FB069":r>0.25?"#FFB627":"#FF4757";
+    if(c.patience<=0)customerLeaves(c);
+  }
+  if(game.level.tk){
+    game.tkTimer-=dt;
+    if(game.tkTimer<=0&&game.takeouts.length<(game.level.mtk||2)){ringPhone();game.tkTimer=game.level.ti||30}
+    if(game.phoneRinging){game.phoneTimer-=dt;if(game.phoneTimer<=0){game.phoneRinging=false;renderTakeout()}}
+    for(var j=game.takeouts.length-1;j>=0;j--){
+      var o=game.takeouts[j];o.timeLeft-=dt;
+      o.timerEl.textContent=Math.ceil(o.timeLeft)+"s";
+      o.timerEl.classList.toggle("warn",o.timeLeft<10);
+      if(o.timeLeft<=0)takeoutExpired(o);
+    }
+  }
+  if(game.blendTimer>0){
+    game.blendTimer-=dt;
+    var fill=document.getElementById("blend-progress-fill");
+    if(fill&&game.blendDur>0){var pct=Math.round((1-game.blendTimer/game.blendDur)*100);fill.style.width=Math.max(0,Math.min(100,pct))+"%"}
+    if(game.blendTimer<=0)completeBlend();
+  }
+  $("tm").textContent=fmtTime(game.timeLeft);
+  $("cn").textContent=game.coins;
+  $("sk").textContent=game.stock;
+  $("sk").parentNode.style.color=game.stock<=5?"#FF4757":"";
+  $("cm").textContent="x"+getComboMult().toFixed(1);
+  $("cd").classList.toggle("hot",game.combo>=3);
+}
+
+function loop(ts){
+  var dt=Math.min((ts-lastTime)/1000,0.1);lastTime=ts;
+  if(game&&game.state==="playing"){try{update(dt)}catch(e){console.error('Update error:',e);game.state="error";alert('Game error: '+e.message)}}
+  requestAnimationFrame(loop);
+}
+
+// === Test API (for automated testing) ===
+window.__testAPI={
+  startGame:startGame,
+  beginLevel:beginLevel,
+  spawnCustomer:spawnCustomer,
+  selectIngredient:selectIngredient,
+  tryServe:tryServe,
+  trashDrink:trashDrink,
+  getGame:function(){return game},
+  getDrinks:function(){return DRINKS},
+  getSave:function(){return save},
+  getLevel:getLevel,
+  goToShop:goToShop,
+  nextLevel:nextLevel,
+  showIntro:showIntro,
+  completeBlend:completeBlend,
+  saveGame:saveGame,
+  applyWallpaper:applyWallpaper,
+  getWallpapers:function(){return WALLPAPERS},
+  ringPhone:ringPhone,
+  acceptTakeout:acceptTakeout
+};
+Object.defineProperty(window,'__game',{get:function(){return game}});
+
+// === Init ===
+function init(){
+  window.__initStart=true;
+  try{
+    DRINKS=genDrinks();loadSave();applyWallpaper();
+    $("btn-start").onclick=startGame;
+    $("btn-cont").onclick=continueGame;
+    $("btn-begin").onclick=beginLevel;
+    $("btn-trash").onclick=trashDrink;
+    $("btn-serve").onclick=tryServe;
+    $("btn-shop").onclick=goToShop;
+    $("btn-next").onclick=nextLevel;
+    if(save.level>1||save.coins>500)$("btn-cont").classList.remove("hidden");
+    showScreen("ts");requestAnimationFrame(loop);
+    window.__initDone=true;
+  }catch(e){
+    var d=document.createElement('div');d.style.cssText='position:fixed;top:0;left:0;right:0;background:#FF4757;color:#fff;padding:10px;font-size:13px;z-index:9999;word-break:break-all';
+    d.textContent='Init Error: '+e.message+' | '+(e.stack||'').substring(0,300);document.body.appendChild(d);
+  }
+}
+
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",init)}else{init()}
+if(location.hash==="#autostart"){setTimeout(function(){startGame();beginLevel();for(var i=0;i<6;i++)spawnCustomer();$("cn").textContent="1000";game.coins=1000},100)}
+if(location.hash==="#shop"){setTimeout(function(){startGame();beginLevel();game.coins=2000;$("cn").textContent="2000";goToShop()},100)}
+if(location.hash==="#wppattern"){setTimeout(function(){startGame();save.wallpapers.polka=true;save.currentWallpaper="polka";saveGame();applyWallpaper();beginLevel();for(var i=0;i<6;i++)spawnCustomer()},100)}
+if(location.hash==="#clean"){localStorage.removeItem("boba_dash_save")}
+})();
+</script>
+</body>
+</html>

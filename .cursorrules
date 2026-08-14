@@ -1,0 +1,147 @@
+# ============================================================
+# Boba Dash — Cursor AI Rules
+# Project: Bubble Tea Time-Management Game (Overseas Edition)
+# ============================================================
+
+## Project Overview
+- **Name**: Boba Dash
+- **Type**: Time-management cooking game (Bubble Tea theme)
+- **Platform**: React Native (Expo) → iOS + Android native app
+- **Backend**: Supabase (PostgreSQL + Auth + Edge Functions + RLS)
+- **Architecture**: RN Shell + WebView Canvas Game + Supabase Backend
+- **Language**: TypeScript (shared) + JavaScript (H5 game)
+
+## Tech Stack
+- **Frontend**: Expo SDK 51, React Native 0.74, React 18.2
+- **Navigation**: @react-navigation/bottom-tabs
+- **Backend**: Supabase JS v2 (@supabase/supabase-js)
+- **WebView**: react-native-webview (loads H5 Canvas game)
+- **Storage**: AsyncStorage (offline) + Supabase (cloud sync)
+- **IAP**: RevenueCat (planned)
+- **Auth**: Supabase Auth (Apple + Google OAuth)
+
+## Architecture Pattern: Offline-First
+- Game is **always playable offline** (single-player mode)
+- Auth is **optional** — enables social features when connected
+- Data flow: Save → AsyncStorage (instant) → Supabase (background sync)
+- Storage abstraction: `HybridStorage` class in `shared/storage.ts`
+- Never block the game loop on network calls
+
+## Directory Structure
+```
+BobaDash/
+├── App.tsx                    # RN entry point
+├── app.json                   # Expo config
+├── package.json               # Dependencies
+├── tsconfig.json              # TypeScript config
+├── babel.config.js            # Babel + module-resolver
+├── metro.config.js            # Metro (adds .html as asset)
+├── .env / .env.example        # Environment variables
+├── .cursorrules               # This file
+├── shared/                    # Shared between RN and H5
+│   ├── types.ts               # All TypeScript types
+│   ├── drink-data.ts          # Bubble tea data (1000 drinks)
+│   ├── level-data.ts          # 108 levels
+│   ├── social-config.ts       # Social system config
+│   ├── game-engine.ts         # Core game logic
+│   └── storage.ts             # Offline-first storage abstraction
+├── src/                       # React Native app
+│   ├── navigation/            # Tab navigator
+│   ├── screens/               # Game, Social, Leaderboard, Profile
+│   └── services/              # Supabase client, Auth, Bridge handler
+├── webview-game/              # H5 Canvas game
+│   └── index.html             # Self-contained game file
+├── supabase/
+│   └── migrations/
+│       └── 0001_init.sql      # Database schema (9 tables + RLS + cron)
+├── docs/                      # 16 project documents (GDD, architecture, production)
+└── assets/                    # App icons, splash screens
+```
+
+## Code Style Rules
+
+### TypeScript
+- Use `strict: true` mode
+- Prefer interfaces over type aliases for object shapes
+- Use `import type` for type-only imports
+- Path aliases: `@shared/*` → `shared/*`, `@src/*` → `src/*`
+- All exported functions must have JSDoc comments
+
+### React Native
+- Use functional components with hooks only (no class components)
+- Use `StyleSheet.create()` for styling
+- Use `SafeAreaProvider` + `SafeAreaView` for notched devices
+- Never use `alert()` — use `Alert.alert()` from react-native
+
+### WebView Bridge
+- All H5 → RN communication goes through `Bridge.send(type, payload)`
+- All RN → H5 communication goes through `webViewRef.current.injectJavaScript()`
+- Message format: `{ id, type, payload, timestamp }`
+- Never use `postMessage()` directly — always go through the Bridge adapter
+
+### Game Engine
+- Game state is **immutable from UI** — only modify through engine functions
+- Canvas rendering happens in `requestAnimationFrame` loop
+- Touch events on Canvas are handled by coordinate hit-testing
+- Game data (drinks, levels) is generated once at module load
+
+### Database (Supabase)
+- All tables have RLS enabled
+- Edge Functions use `service_role` key to bypass RLS
+- Atomic operations use PostgreSQL RPC functions
+- `updated_at` is auto-maintained by triggers
+- `date_key` format: `YYYY-MM-DD`
+- User IDs are UUIDs from `auth.users`
+
+## Key Design Decisions
+1. **WebView Bridge over native rewrite**: 95% code reuse from H5 prototype
+2. **Offline-first over always-online**: Game must work with zero connectivity
+3. **Supabase over Firebase**: PostgreSQL + RLS is more powerful than NoSQL
+4. **RevenueCat over native IAP**: Cross-platform IAP management
+5. **5 free friend slots (fixed)**: No paid expansion in overseas version
+
+## Social System (4 Mechanisms)
+1. **Taste Test**: Taster 35% / Owner 20% / System 45%
+2. **Cover Shift** (help_watch): Helper 15% / Owner 70% / System 85%
+3. **Leaderboard**: Weekly, 3 categories (income/combo/decoration)
+4. **Custom Recipes**: Player-created drinks shareable with friends
+
+## Common Patterns
+- When adding a new screen: Register in TabNavigator, add type to TabParamList
+- When adding a new Supabase table: Add to SQL migration, add RLS policy, add TypeScript type
+- When modifying game data: Update `shared/drink-data.ts` or `shared/level-data.ts`
+- When adding bridge messages: Add to `GameToNativeType` or `NativeToGameType` in types.ts
+
+## Do NOT
+- Do not use `any` type — use `unknown` or specific types
+- Do not import from `react-native-webview` in shared/ (it's RN-only)
+- Do not use `localStorage` in the H5 game — use Bridge.send('GAME_SAVE')
+- Do not call Supabase directly from the H5 game — go through Bridge
+- Do not add advertisements — this is a pure IAP game (user decision)
+- Do not use class components in React Native screens
+
+## Environment Variables
+- `EXPO_PUBLIC_SUPABASE_URL` — Supabase project URL
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY` — Supabase anon/public key
+- `EXPO_PUBLIC_REVENUECAT_API_KEY` — RevenueCat public API key
+- `EXPO_PUBLIC_PAYPAL_CLIENT_ID` — PayPal client ID for web store
+- `EXPO_PUBLIC_GAME_VERSION` — Semantic version string
+
+## Development Commands
+```bash
+npx expo install    # Install all dependencies
+npx expo start      # Start dev server (Metro bundler)
+npx expo start --ios     # Run on iOS simulator
+npx expo start --android # Run on Android emulator
+npx tsc --noEmit    # Type-check without building
+```
+
+## Testing Checklist
+- [ ] Game loads in WebView without errors
+- [ ] Bridge messages flow correctly (GAME_READY → NATIVE_CONFIG)
+- [ ] Save data persists across app restarts (offline mode)
+- [ ] Auth flow works (Google/Apple sign-in)
+- [ ] Cloud sync works (local → Supabase on save)
+- [ ] Haptics fire on serve/fail events
+- [ ] Canvas tap hit-testing is accurate
+- [ ] Game loop maintains 60fps

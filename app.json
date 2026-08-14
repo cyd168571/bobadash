@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "Boba Dash",
+    "slug": "boba-dash",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "bobadash",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF6B9D"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bobadash.app",
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": ["bobadash"]
+          }
+        ]
+      },
+      "usesAppleSignIn": true
+    },
+    "android": {
+      "package": "com.bobadash.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FF6B9D"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": ["expo-secure-store"],
+    "extra": {
+      "eas": {
+        "projectId": ""
+      }
+    }
+  }
+}

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boba Dash — Game Design Document</title>
+<style>
+  :root {
+    --pink: #FF6B9D;
+    --mint: #4ECDC4;
+    --purple: #9B59B6;
+    --brown: #8B5A3C;
+    --dark: #2C3E50;
+    --light: #F8F9FA;
+    --gray: #95A5A6;
+    --yellow: #F1C40F;
+    --red: #E74C3C;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: var(--dark); background: var(--light); line-height: 1.7; }
+  .header { background: linear-gradient(135deg, var(--pink), var(--purple)); color: white; padding: 60px 20px; text-align: center; }
+  .header h1 { font-size: 3em; margin-bottom: 10px; }
+  .header .subtitle { font-size: 1.3em; opacity: 0.9; }
+  .header .version { margin-top: 15px; font-size: 0.9em; opacity: 0.8; }
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+  .toc { background: white; border-radius: 12px; padding: 30px; margin-bottom: 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+  .toc h2 { color: var(--pink); border-bottom: 2px solid var(--pink); padding-bottom: 10px; margin-bottom: 15px; }
+  .toc ol { padding-left: 25px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--dark); text-decoration: none; }
+  .toc a:hover { color: var(--pink); }
+  section { background: white; border-radius: 12px; padding: 35px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+  h2 { color: var(--dark); font-size: 1.8em; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--mint); }
+  h3 { color: var(--purple); font-size: 1.3em; margin: 25px 0 12px 0; }
+  h4 { color: var(--brown); font-size: 1.1em; margin: 18px 0 8px 0; }
+  p { margin-bottom: 12px; }
+  table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.95em; }
+  th { background: var(--mint); color: white; padding: 10px 12px; text-align: left; }
+  td { padding: 10px 12px; border-bottom: 1px solid #E0E0E0; }
+  tr:nth-child(even) { background: #F5F5F5; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.8em; font-weight: bold; margin: 2px; }
+  .tag-pink { background: var(--pink); color: white; }
+  .tag-mint { background: var(--mint); color: white; }
+  .tag-purple { background: var(--purple); color: white; }
+  .tag-brown { background: var(--brown); color: white; }
+  .highlight-box { background: linear-gradient(135deg, #FFF5F8, #F0FFFE); border-left: 4px solid var(--pink); padding: 15px 20px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+  .warn-box { background: #FFF8E1; border-left: 4px solid var(--yellow); padding: 15px 20px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+  .code-block { background: #1E1E1E; color: #D4D4D4; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 0.9em; overflow-x: auto; margin: 12px 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card { background: #F8F9FA; border-radius: 8px; padding: 15px; border: 1px solid #E0E0E0; }
+  .card h4 { margin-top: 0; }
+  ul, ol { padding-left: 25px; margin-bottom: 12px; }
+  li { margin: 4px 0; }
+  .footer { text-align: center; padding: 30px; color: var(--gray); font-size: 0.9em; }
+  @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } .header h1 { font-size: 2em; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🧋 Boba Dash</h1>
+  <div class="subtitle">Game Design Document</div>
+  <div class="version">v2.0 · August 2026 · React Native (Expo) + Supabase</div>
+</div>
+
+<div class="container">
+
+<!-- TOC -->
+<div class="toc">
+  <h2>📋 Table of Contents</h2>
+  <ol>
+    <li><a href="#overview">Game Overview</a></li>
+    <li><a href="#core-loop">Core Gameplay Loop</a></li>
+    <li><a href="#drinks">Drink System (1000+ Combinations)</a></li>
+    <li><a href="#levels">Level System (108 Levels)</a></li>
+    <li><a href="#social">Social System (4 Mechanisms)</a></li>
+    <li><a href="#monetization">Monetization (5 Tracks, 18 SKUs)</a></li>
+    <li><a href="#tech">Technical Architecture</a></li>
+    <li><a href="#art">Art Style & UI Design</a></li>
+    <li><a href="#audio">Audio Design</a></li>
+    <li><a href="#mvp">MVP Plan & Roadmap</a></li>
+  </ol>
+</div>
+
+<!-- 1. Overview -->
+<section id="overview">
+  <h2>1. Game Overview</h2>
+
+  <h3>1.1 Elevator Pitch</h3>
+  <p>Boba Dash is a bubble tea time management game where players brew, serve, and decorate their way to a thriving boba empire. With 1000+ drink combinations, 108 levels, social features like Taste Test and Cover Shift, and 100% ad-free gameplay, Boba Dash delivers a pure, satisfying experience for casual gamers worldwide.</p>
+
+  <h3>1.2 Project Facts</h3>
+  <table>
+    <tr><th>Attribute</th><th>Value</th></tr>
+    <tr><td>Game Name</td><td>Boba Dash</td></tr>
+    <tr><td>Genre</td><td>Time Management / Cooking / Simulation</td></tr>
+    <tr><td>Platform</td><td>iOS + Android (React Native / Expo)</td></tr>
+    <tr><td>Backend</td><td>Supabase (PostgreSQL + Auth + Edge Functions)</td></tr>
+    <tr><td>Payment</td><td>RevenueCat (Apple IAP + Google Play IAP) + PayPal Web Store</td></tr>
+    <tr><td>Native Social</td><td>Apple Game Center + Google Play Games + Instagram/TikTok Sharing</td></tr>
+    <tr><td>Language</td><td>English (launch) — i18n architecture for future expansion</td></tr>
+    <tr><td>Session Length</td><td>3-5 minutes per level</td></tr>
+    <tr><td>Target Audience</td><td>Casual gamers aged 16-35, female-leaning, bubble tea enthusiasts</td></tr>
+    <tr><td>Monetization</td><td>100% ad-free, cosmetic-only IAP (5 tracks, 18 SKUs)</td></tr>
+    <tr><td>Launch Markets</td><td>Global (App Store + Google Play)</td></tr>
+    <tr><td>Developer</td><td>Solo indie developer (Cursor + Supabase)</td></tr>
+  </table>
+
+  <h3>1.3 Core Differentiators</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4>🧋 Modular Drink System</h4>
+      <p>5 Bases × 14 Flavors × 8 Toppings × 5 Cup Types = 2,800 possible combinations. Fisher-Yates seeded shuffle generates 1000 unique drinks with consistent results across devices.</p>
+    </div>
+    <div class="card">
+      <h4>📱 Offline-First Architecture</h4>
+      <p>Single-player game fully playable offline. Social features activate when online. HybridStorage: AsyncStorage first, Supabase async sync.</p>
+    </div>
+    <div class="card">
+      <h4>🤝 Asynchronous Social</h4>
+      <p>Taste Test (visit friends' shops) + Cover Shift (help with delivery overflow) + Leaderboard (3 categories) + Custom Recipes (player-created signature drinks).</p>
+    </div>
+    <div class="card">
+      <h4>🎨 Pure Cosmetic Monetization</h4>
+      <p>Zero ads, zero pay-to-win. All 18 SKUs are purely cosmetic: decorations, recipe slots, ingredient skins, avatar items, and theme music.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Core Loop -->
+<section id="core-loop">
+  <h2>2. Core Gameplay Loop</h2>
+
+  <h3>2.1 Primary Loop (per level)</h3>
+  <div class="highlight-box">
+    <strong>Start Level → Customers arrive → Read order → Brew drink (Base → Flavor → Topping → Cup) → Serve → Earn coins → Delivery orders (dual-thread tension) → Combo chain → Day complete → Spend coins (shop/decorate) → Next level</strong>
+  </div>
+
+  <h3>2.2 Dual-Thread Tension</h3>
+  <p>Each level features two simultaneous streams of demand:</p>
+  <table>
+    <tr><th>Thread</th><th>Description</th><th>Tension Source</th></tr>
+    <tr><td>Walk-in Customers</td><td>Customers queue at the counter with patience timers</td><td>Patience runs out → customer leaves → lose coins</td></tr>
+    <tr><td>Delivery Orders</td><td>Phone rings with delivery orders, each with a countdown</td><td>Timer expires → order fails → lose coins + combo resets</td></tr>
+  </table>
+  <p>The player must constantly decide: serve the waiting customer, or grab the delivery before it times out? This dual-thread tension is the core of Boba Dash's gameplay.</p>
+
+  <h3>2.3 Combo System</h3>
+  <table>
+    <tr><th>Combo</th><th>Multiplier</th><th>Condition</th></tr>
+    <tr><td>x1</td><td>1.0x</td><td>Normal serve</td></tr>
+    <tr><td>x2</td><td>1.2x</td><td>2 consecutive perfect serves</td></tr>
+    <tr><td>x3</td><td>1.5x</td><td>3 consecutive perfect serves</td></tr>
+    <tr><td>x5</td><td>2.0x</td><td>5 consecutive perfect serves</td></tr>
+    <tr><td>x10</td><td>3.0x</td><td>10 consecutive — "On Fire!" status</td></tr>
+  </table>
+  <p>Combo resets on: failed serve, expired delivery, or wrong ingredient. Perfect serve = correct drink served before patience drops below 50%.</p>
+
+  <h3>2.4 Ingredient Inventory</h3>
+  <p>Players manage a limited inventory of ingredients. Running out of an ingredient mid-level forces the player to adapt their menu or lose customers. Ingredients can be restocked between levels using coins earned.</p>
+  <table>
+    <tr><th>Ingredient Type</th><th>Starting Stock</th><th>Restock Cost</th></tr>
+    <tr><td>Base Tea</td><td>10 cups</td><td>5 coins/cup</td></tr>
+    <tr><td>Flavor Syrup</td><td>8 pumps</td><td>3 coins/pump</td></tr>
+    <tr><td>Topping</td><td>6 servings</td><td>4 coins/serving</td></tr>
+    <tr><td>Cup</td><td>15 cups</td><td>2 coins/cup</td></tr>
+  </table>
+</section>
+
+<!-- 3. Drinks -->
+<section id="drinks">
+  <h2>3. Drink System</h2>
+
+  <h3>3.1 Modular Composition</h3>
+  <p>Every drink is composed of 4 modules, each chosen independently:</p>
+  <table>
+    <tr><th>Module</th><th>Options</th><th>Count</th></tr>
+    <tr><td>Base Tea</td><td>Black Tea, Green Tea, Oolong Tea, Jasmine Tea, Thai Tea</td><td>5</td></tr>
+    <tr><td>Flavor</td><td>Strawberry, Mango, Matcha, Taro, Brown Sugar, Honey, Lavender, Peach, Passion Fruit, Chocolate, Mint, Rose, Coffee, Vanilla</td><td>14</td></tr>
+    <tr><td>Topping</td><td>Tapioca Pearls, Coconut Jelly, Grass Jelly, Pudding, Crystal Boba, Aloe Vera, Cheese Foam, Whipped Cream</td><td>8</td></tr>
+    <tr><td>Cup Type</td><td>Classic Cup, Mason Jar, Tumbler, Bubble Cup, Cone Cup</td><td>5</td></tr>
+  </table>
+  <p><strong>Total possible combinations: 5 × 14 × 8 × 5 = 2,800</strong></p>
+
+  <h3>3.2 Fisher-Yates Seeded Shuffle</h3>
+  <p>The game generates 1000 unique drinks using a Fisher-Yates shuffle with a fixed seed, ensuring:</p>
+  <ul>
+    <li><strong>Consistency</strong>: Same 1000 drinks on every device — no random different drinks per player</li>
+    <li><strong>Fairness</strong>: No duplicates, every drink is unique</li>
+    <li><strong>Deterministic</strong>: Drink #500 is always the same drink, enabling social features (friends can reference specific drinks)</li>
+  </ul>
+
+  <h3>3.3 Drink Pricing</h3>
+  <p>Price is calculated based on module combination:</p>
+  <div class="code-block">basePrice + flavorPrice + toppingPrice + cupPrice + levelMultiplier</div>
+  <p>Example: Black Tea (5) + Matcha (8) + Tapioca Pearls (6) + Mason Jar (4) × Level 3 multiplier (1.3) = 29.9 ≈ 30 coins</p>
+</section>
+
+<!-- 4. Levels -->
+<section id="levels">
+  <h2>4. Level System (108 Levels)</h2>
+
+  <h3>4.1 Level Structure</h3>
+  <table>
+    <tr><th>Range</th><th>Type</th><th>Description</th></tr>
+    <tr><td>1-4</td><td>Hand-crafted Tutorial</td><td>Teach core mechanics: brewing, serving, delivery, combo</td></tr>
+    <tr><td>5-108</td><td>Procedurally Generated</td><td>Seeded generation with difficulty scaling</td></tr>
+  </table>
+
+  <h3>4.2 Difficulty Parameters</h3>
+  <table>
+    <tr><th>Parameter</th><th>Level 1</th><th>Level 50</th><th>Level 108</th></tr>
+    <tr><td>Customer count</td><td>5</td><td>15</td><td>25</td></tr>
+    <tr><td>Delivery count</td><td>2</td><td>8</td><td>12</td></tr>
+    <tr><td>Patience (seconds)</td><td>30</td><td>18</td><td>12</td></tr>
+    <tr><td>Delivery timer (seconds)</td><td>45</td><td>25</td><td>18</td></tr>
+    <tr><td>Drink complexity</td><td>2 modules</td><td>3 modules</td><td>4 modules</td></tr>
+    <tr><td>Drink unlocks</td><td>1-50</td><td>1-500</td><td>1-1000</td></tr>
+  </table>
+
+  <h3>4.3 Unlock Progression</h3>
+  <p>As the player progresses, more drink combinations become available:</p>
+  <ul>
+    <li>Level 1: 50 drinks unlocked (simple 2-module drinks)</li>
+    <li>Level 10: 100 drinks unlocked</li>
+    <li>Level 30: 300 drinks unlocked (3-module drinks)</li>
+    <li>Level 50: 500 drinks unlocked</li>
+    <li>Level 80: 800 drinks unlocked (full 4-module drinks)</li>
+    <li>Level 108: All 1000 drinks unlocked</li>
+  </ul>
+</section>
+
+<!-- 5. Social -->
+<section id="social">
+  <h2>5. Social System</h2>
+
+  <h3>5.1 Overview</h3>
+  <p>Boba Dash features 4 social mechanisms built on asynchronous interaction — players don't need to be online simultaneously. Social features use Supabase Edge Functions with native platform integration (Apple Game Center + Google Play Games).</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>🧋 Taste Test</h4>
+      <p>Visit a friend's shop and taste a free boba. Both players earn coins!</p>
+      <p><strong>Revenue split: Taster 35% / Shop Owner 20% / System Subsidy 45%</strong></p>
+      <p>Limit: 5 taste tests/day, 1 per friend/day</p>
+    </div>
+    <div class="card">
+      <h4>🤝 Cover Shift</h4>
+      <p>Help a friend handle delivery overflow when they're offline. Process their pending deliveries and split earnings.</p>
+      <p><strong>Revenue split: Helper 15% / Shop Owner 70% / System Subsidy 15%</strong></p>
+      <p>Limit: 5 cover shifts/day</p>
+    </div>
+    <div class="card">
+      <h4>🏆 Leaderboard</h4>
+      <p>Compete with friends in 3 categories, reset weekly (Monday 00:00 UTC):</p>
+      <ul>
+        <li>Weekly Income</li>
+        <li>Max Combo</li>
+        <li>Decoration Score</li>
+      </ul>
+      <p>Dual-mode: native Game Center/Play Games UI + Supabase cross-platform fallback</p>
+    </div>
+    <div class="card">
+      <h4>📝 Custom Recipes</h4>
+      <p>Create your signature drink: Base → Flavor → Topping → Cup → Name it!</p>
+      <p>30% chance a Taste Test serves a friend's custom recipe.</p>
+      <p>2 recipe slots (1 free + 1 unlockable at $0.99)</p>
+    </div>
+  </div>
+
+  <h3>5.2 Friend System</h3>
+  <table>
+    <tr><th>Feature</th><th>Detail</th></tr>
+    <tr><td>Friend Slots</td><td>5 free, fixed (no paid expansion)</td></tr>
+    <tr><td>Add Friend</td><td>6-digit invite code or native platform friends (Game Center / Play Games)</td></tr>
+    <tr><td>Deep Link</td><td><code>boba-dash://invite?code=ABC123</code></td></tr>
+    <tr><td>Tier System</td><td>5 tiers based on total income — prevents cross-tier arbitrage in Taste Test</td></tr>
+  </table>
+
+  <h3>5.3 Anti-Abuse Mechanisms</h3>
+  <ul>
+    <li>Daily limits per action type (5 taste tests, 5 cover shifts)</li>
+    <li>1 action per friend per day</li>
+    <li>Server-side atomic operations (PostgreSQL FOR UPDATE + transactions)</li>
+    <li>Tier-based earning calculation (prevents high-tier players farming low-tier friends)</li>
+    <li>Profanity filter on custom recipe names and shop names</li>
+  </ul>
+
+  <h3>5.4 Native Social Platform Integration</h3>
+  <table>
+    <tr><th>Platform</th><th>Features Used</th></tr>
+    <tr><td>Apple Game Center</td><td>Identity, Friends, 3 Leaderboards, 7 Achievements</td></tr>
+    <tr><td>Google Play Games</td><td>Identity, Friends, 3 Leaderboards, 7 Achievements</td></tr>
+    <tr><td>Instagram Stories</td><td>Share Card with shop screenshot + download link</td></tr>
+    <tr><td>TikTok</td><td>System share sheet with video/image</td></tr>
+    <tr><td>System Share</td><td>Fallback: iMessage, WhatsApp, email, etc.</td></tr>
+  </table>
+</section>
+
+<!-- 6. Monetization -->
+<section id="monetization">
+  <h2>6. Monetization</h2>
+
+  <h3>6.1 Principles</h3>
+  <div class="highlight-box">
+    <strong>100% ad-free. No rewarded ads, no banner ads, no interstitials. All purchases are cosmetic-only. No pay-to-win. No data selling.</strong>
+  </div>
+
+  <h3>6.2 Five Tracks, 18 SKUs</h3>
+  <table>
+    <tr><th>Track</th><th>SKUs</th><th>Price Range</th><th>Type</th></tr>
+    <tr><td>Decoration Packs</td><td>4</td><td>$0.99 - $2.99</td><td>One-time</td></tr>
+    <tr><td>Custom Recipe Slots</td><td>2</td><td>$0.99 - $1.99</td><td>One-time</td></tr>
+    <tr><td>Ingredient Skins</td><td>3</td><td>$0.99</td><td>One-time</td></tr>
+    <tr><td>Avatar Customization</td><td>5</td><td>$0.99 - $2.99</td><td>One-time</td></tr>
+    <tr><td>Shop Theme Music</td><td>4</td><td>$0.99 - $1.99</td><td>One-time</td></tr>
+    <tr><td><strong>Total</strong></td><td><strong>18</strong></td><td><strong>$0.99 - $2.99</strong></td><td><strong>Zero ads</strong></td></tr>
+  </table>
+
+  <h3>6.3 IAP Implementation</h3>
+  <ul>
+    <li><strong>RevenueCat</strong>: Unified IAP management across Apple App Store + Google Play</li>
+    <li><strong>PayPal Web Store</strong>: Independent web store for direct purchases (synced via Supabase)</li>
+    <li><strong>Entitlements</strong>: Server-side validation, purchases stored in <code>iap_records</code> table</li>
+    <li><strong>Restore Purchases</strong>: Required by Apple, implemented via <code>Purchases.restorePurchases()</code></li>
+  </ul>
+
+  <h3>6.4 Revenue Model</h3>
+  <table>
+    <tr><th>Metric</th><th>Value</th></tr>
+    <tr><td>ARPU (Average Revenue Per User)</td><td>$0.50 - $1.50</td></tr>
+    <tr><td>Net ARPU (after 30% platform fee)</td><td>$0.35 - $1.05</td></tr>
+    <tr><td>LTV (Lifetime Value)</td><td>$11.60 / user</td></tr>
+    <tr><td>CAC (Customer Acquisition Cost)</td><td>$0 (organic / social virality)</td></tr>
+    <tr><td>Monthly fixed cost</td><td>$55 - $80</td></tr>
+    <tr><td>Break-even DAU</td><td>&lt; 100 daily active users</td></tr>
+  </table>
+</section>
+
+<!-- 7. Tech -->
+<section id="tech">
+  <h2>7. Technical Architecture</h2>
+
+  <h3>7.1 Technology Stack</h3>
+  <table>
+    <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+    <tr><td>App Shell</td><td>React Native + Expo</td><td>Cross-platform mobile app (iOS + Android)</td></tr>
+    <tr><td>Game Engine</td><td>HTML5 Canvas 2D (in WebView)</td><td>Core gameplay rendering</td></tr>
+    <tr><td>Bridge</td><td>postMessage Protocol</td><td>RN ↔ WebView bidirectional communication</td></tr>
+    <tr><td>Backend</td><td>Supabase</td><td>PostgreSQL + Auth + Edge Functions + Realtime</td></tr>
+    <tr><td>Storage</td><td>HybridStorage</td><td>AsyncStorage (local-first) + Supabase (cloud sync)</td></tr>
+    <tr><td>IAP</td><td>RevenueCat</td><td>Unified Apple/Google in-app purchases</td></tr>
+    <tr><td>Web Payment</td><td>PayPal Braintree</td><td>Web store direct purchases</td></tr>
+    <tr><td>Native Social</td><td>Game Center + Play Games</td><td>Identity, friends, leaderboards, achievements</td></tr>
+    <tr><td>Crash Reporting</td><td>Sentry</td><td>Error tracking and performance monitoring</td></tr>
+    <tr><td>Analytics</td><td>PostHog (self-hosted)</td><td>User behavior analytics</td></tr>
+  </table>
+
+  <h3>7.2 Database Schema (9 Tables)</h3>
+  <table>
+    <tr><th>Table</th><th>Purpose</th></tr>
+    <tr><td>users</td><td>Player profiles (auth, display name, tier, coins)</td></tr>
+    <tr><td>friend_edges</td><td>Friend relationships (bidirectional)</td></tr>
+    <tr><td>social_actions</td><td>Taste Test + Cover Shift action logs</td></tr>
+    <tr><td>daily_limits</td><td>Daily action limits per user (taste_tests, helps)</td></tr>
+    <tr><td>custom_recipes</td><td>Player-created signature recipes</td></tr>
+    <tr><td>leaderboard_cache</td><td>Weekly leaderboard rankings (3 categories)</td></tr>
+    <tr><td>iap_records</td><td>Purchase records and entitlements</td></tr>
+    <tr><td>friend_requests</td><td>Pending friend invitations</td></tr>
+    <tr><td>player_saves</td><td>Cloud save data (progress, inventory, decorations)</td></tr>
+  </table>
+
+  <h3>7.3 Edge Functions (15 Functions)</h3>
+  <table>
+    <tr><th>Function</th><th>Purpose</th></tr>
+    <tr><td>login</td><td>User registration / login / profile creation</td></tr>
+    <tr><td>syncSave</td><td>Game progress cloud sync</td></tr>
+    <tr><td>getFriendList</td><td>Friend list + online status</td></tr>
+    <tr><td>addFriend / removeFriend</td><td>Friend management</td></tr>
+    <tr><td>tasteTest</td><td>Taste Test logic (35%/20%/45% split)</td></tr>
+    <tr><td>helpWatch</td><td>Cover Shift logic (15%/70% split)</td></tr>
+    <tr><td>getSocialReport</td><td>Daily social summary</td></tr>
+    <tr><td>settleSocialReport</td><td>Process pending social actions</td></tr>
+    <tr><td>generateOfflineDeliveries</td><td>Generate offline delivery orders for Cover Shift</td></tr>
+    <tr><td>getLeaderboard</td><td>Weekly leaderboard query + native sync</td></tr>
+    <tr><td>syncNativeFriends</td><td>Sync Game Center / Play Games friends</td></tr>
+    <tr><td>submitNativeScore</td><td>Submit score to native leaderboards</td></tr>
+    <tr><td>sendFriendRequest</td><td>Send friend invitation</td></tr>
+    <tr><td>dailyReset / weeklyReset</td><td>Scheduled resets (pg_cron)</td></tr>
+  </table>
+
+  <h3>7.4 Offline-First Design</h3>
+  <div class="highlight-box">
+    <p><strong>HybridStorage Class</strong>: AsyncStorage is the primary storage layer. Supabase syncs in the background when online. If offline, the game runs fully on local data. Conflict resolution: cloud wins if divergence > 20%.</p>
+  </div>
+</section>
+
+<!-- 8. Art -->
+<section id="art">
+  <h2>8. Art Style & UI Design</h2>
+
+  <h3>8.1 Visual Direction</h3>
+  <p>Flat illustration style with vibrant colors. Boba/bubble tea culture aesthetic — playful, warm, and appetizing. No photorealism, no dark themes.</p>
+
+  <h3>8.2 Color Palette</h3>
+  <table>
+    <tr><th>Color</th><th>Hex</th><th>Usage</th></tr>
+    <tr><td>Bob Pink</td><td>#FF6B9D</td><td>Brand primary, CTAs, highlights</td></tr>
+    <tr><td>Mint Green</td><td>#4ECDC4</td><td>Secondary, success states, tabs</td></tr>
+    <tr><td>Taro Purple</td><td>#9B59B6</td><td>Creative elements, Taro flavor</td></tr>
+    <tr><td>Boba Brown</td><td>#8B5A3C</td><td>Tapioca pearls, coffee, wood textures</td></tr>
+    <tr><td>Honey Yellow</td><td>#F1C40F</td><td>Honey flavor, tips, warnings</td></tr>
+    <tr><td>Urgent Red</td><td>#E74C3C</td><td>Timers, patience low, errors</td></tr>
+  </table>
+
+  <h3>8.3 SVG Icon System</h3>
+  <p>51 SVG symbols defined in a single <code>&lt;defs&gt;</code> block, referenced via <code>&lt;use href="#icon-name"&gt;</code>. 6 color themes driven by CSS variables. No emoji in game UI — all icons are flat illustration SVGs.</p>
+
+  <h3>8.4 Decoration System</h3>
+  <table>
+    <tr><th>Decoration Pack</th><th>Items</th><th>Theme</th></tr>
+    <tr><td>Default (free)</td><td>20 items</td><td>Basic cafe essentials</td></tr>
+    <tr><td>Sakura Dreams</td><td>25 items</td><td>Cherry blossoms, lanterns, wood</td></tr>
+    <tr><td>Neon Cyber</td><td>25 items</td><td>Glowing signs, futuristic, dark</td></tr>
+    <tr><td>Cozy Garden</td><td>25 items</td><td>Plants, fairy lights, rattan</td></tr>
+    <tr><td>Festive Lanterns</td><td>25 items</td><td>Lanterns, gold accents, celebration</td></tr>
+  </table>
+</section>
+
+<!-- 9. Audio -->
+<section id="audio">
+  <h2>9. Audio Design</h2>
+
+  <h3>9.1 Sound Effects</h3>
+  <table>
+    <tr><th>Action</th><th>Sound</th></tr>
+    <tr><td>Brew tea</td><td>Pouring liquid (0.5s)</td></tr>
+    <tr><td>Add topping</td><td>Plop/drop sound (0.3s)</td></tr>
+    <tr><td>Serve drink</td><td>Coin chime (0.4s)</td></tr>
+    <tr><td>Delivery phone</td><td>Phone ring (1.0s)</td></tr>
+    <tr><td>Combo up</td><td>Ascending chime (0.5s)</td></tr>
+    <tr><td>Customer angry</td><td>Dismissed grunt (0.5s)</td></tr>
+    <tr><td>Day complete</td><td>Celebration jingle (2.0s)</td></tr>
+  </table>
+
+  <h3>9.2 Shop Theme Music (IAP)</h3>
+  <table>
+    <tr><th>Track</th><th>Style</th><th>Price</th></tr>
+    <tr><td>Default BGM</td><td>Lo-Fi chill</td><td>Free</td></tr>
+    <tr><td>Tropical Vibes</td><td>Steel drum, reggae</td><td>$0.99</td></tr>
+    <tr><td>K-Pop Beats</td><td>Upbeat K-pop</td><td>$1.99</td></tr>
+    <tr><td>Jazz Cafe</td><td>Smooth jazz</td><td>$1.99</td></tr>
+    <tr><td>EDM Pulse</td><td>Electronic dance</td><td>$1.99</td></tr>
+  </table>
+  <p>Music plays in the player's shop. When a friend does a Taste Test, they hear the shop owner's selected music.</p>
+</section>
+
+<!-- 10. MVP -->
+<section id="mvp">
+  <h2>10. MVP Plan & Roadmap</h2>
+
+  <h3>10.1 Six-Phase Development</h3>
+  <table>
+    <tr><th>Phase</th><th>Name</th><th>Weeks</th><th>Key Deliverables</th></tr>
+    <tr><td>0</td><td>Foundation</td><td>W1-2</td><td>Expo + Supabase + WebView Bridge + Auth</td></tr>
+    <tr><td>1</td><td>Core Game</td><td>W3-5</td><td>108 levels playable, local save</td></tr>
+    <tr><td>2</td><td>Social</td><td>W6-8</td><td>4 social mechanisms, 15 Edge Functions, native social</td></tr>
+    <tr><td>3</td><td>Monetization</td><td>W8-10</td><td>5 tracks, 18 SKUs, RevenueCat + PayPal</td></tr>
+    <tr><td>4</td><td>Polish</td><td>W10-12</td><td>ASO assets, performance, English localization</td></tr>
+    <tr><td>5</td><td>Testing</td><td>W12-14</td><td>TestFlight, closed testing, playtest</td></tr>
+    <tr><td>6</td><td>Launch</td><td>W14-16</td><td>App Store + Google Play submission</td></tr>
+  </table>
+
+  <h3>10.2 Key Risks</h3>
+  <table>
+    <tr><th>Risk</th><th>Probability</th><th>Mitigation</th></tr>
+    <tr><td>App Store review rejection</td><td>Medium</td><td>Read guidelines, 2-week buffer</td></tr>
+    <tr><td>Google Play 20-person closed testing</td><td>High</td><td>Recruit testers early via Discord/Reddit</td></tr>
+    <tr><td>WebView Bridge performance</td><td>Medium</td><td>Early benchmark testing in Phase 0</td></tr>
+    <tr><td>Solo developer timeline overrun</td><td>High</td><td>30% buffer per phase, strict MVP scope</td></tr>
+  </table>
+
+  <h3>10.3 Post-Launch Roadmap</h3>
+  <table>
+    <tr><th>Priority</th><th>Timing</th><th>Content</th></tr>
+    <tr><td>P1</td><td>4 weeks post-launch</td><td>PayPal Web Store, limited seasonal decoration packs (Halloween/Christmas)</td></tr>
+    <tr><td>P2</td><td>8 weeks post-launch</td><td>Endless mode, daily challenges, native leaderboard events</td></tr>
+    <tr><td>P3</td><td>On demand</td><td>Multi-language (Spanish/Japanese/Korean), tablet optimization, accessibility</td></tr>
+  </table>
+</section>
+
+<div class="footer">
+  <p>🧋 Boba Dash — Game Design Document v2.0 · August 2026</p>
+  <p>Brew. Serve. Share. 🧋</p>
+</div>
+
+</div>
+</body>
+</html>
